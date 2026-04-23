@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es-ES">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Carmen Terron">
+    <title>Horario de Clase</title>
+
+    <style>
+        table {
+            border-collapse: collapse;
+            /* Tabla más estrecha que alta */
+            width: 450px;
+            margin: 20px auto;
+            text-align: center;
+            font-family: sans-serif;
+        }
+
+        td {
+            border: 1px solid #333;
+            padding: 10px;
+            /* Forzamos altura para que sea vertical */
+            height: 75px; 
+        }
+
+        /* Estilo para la primera fila (Días de la semana) */
+        tr:first-child td {
+            background-color: #2a4d8f;
+            color: white;
+            font-weight: bold;
+            height: 40px;
+        }
+
+        /* Estilo para la primera columna (Horas) */
+        td:first-child {
+            background-color: #e0e0e0;
+            font-style: italic;
+            font-weight: bold;
+            width: 100px;
+        }
+
+        /* Estilo para el Recreo (Fila 4) */
+        tr:nth-child(4) td {
+            background-color: #fff9c4;
+            font-weight: bold;
+            font-style: italic;
+            height: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1 style="text-align:center;">Horario de clase</h1>
+<p>Esto es un html sencillo en el que se prueba a hacer el horario de clases.</p>
+<table>
+    <tr>
+        <td>Hora/Día</td>
+        <td>Lunes</td>
+        <td>Mares</td>
+        <td>Miércoles</td>
+        <td>Jueves</td>
+        <td>Viernes</td>
+    </tr>
+
+    <tr>
+        <td>15:35 - 16:30</td>
+        <td rowspan="2">Programación</td>
+        <td rowspan="2">Fol</td>
+        <td rowspan="2">Sistemas Informáticos</td>
+        <td rowspan="2">Lenguaje de Marcas</td>
+        <td rowspan="2">Bases de Datos</td>
+    </tr>
+
+    <tr>
+        <td>16:30 - 17:25</td>
+    </tr>
+
+    <tr>
+        <td>18:15 - 18:45</td>
+        <td colspan="5">RECREO</td>
+    </tr>
+
+    <tr>
+        <td>18:45 - 19:35</td>
+        <td>Lenguaje de Marcas</td>
+        <td>Programación</td>
+        <td>Programación</td>
+        <td>Programación</td>
+        <td>Sistemas Informáticos</td>
+    </tr>
+
+    <tr>
+        <td>19:35 - 20:30</td>
+        <td rowspan="2">Bases de Datos</td>
+        <td rowspan="2">Sistemas Informáticos</td>
+        <td rowspan="2">Bases de Datos</td>
+        <td rowspan="2">Entornos de Desarrollo</td>
+        <td rowspan="2">Posicionamiento Web</td>
+    </tr>
+
+    <tr>
+        <td>20:30 - 21:35</td>
+    </tr>
+</table>
+
+</body>
+</html>
