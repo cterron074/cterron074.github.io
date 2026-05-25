@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="curriculum-vitae,portfolio,qa,developer,aesthetic,anime-style,sakura">
+    <title>Carmen Terron 🌸 Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@500;700&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- Variables de Diseño --- */
+        :root {
+           --bg-principal: #fdf2f8; /* Rosa muy pálido pastel */
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --texto-principal: #3f3d56; /* Gris oscuro suave */
+            --texto-secundario: #6c757d;
+            
+            /* Colores de Acento Anime */
+            --color-acento: #bd93f9; /* Lavanda Pastel (Estilo Sailor Moon/Lofi) */
+            --color-acento-hover: #ff79c6; /* Rosa Chicle */
+            --color-secundario: #8be9fd; /* Cian Cielo */
+            
+            --color-bg-badge: #f3e8ff; /* Lavanda muy claro */
+            --borde: #f1f5f9;
+            --sombra-suave: 0 10px 25px -5px rgba(189, 147, 249, 0.15);
+            --sombra-hover: 0 15px 30px -5px rgba(255, 121, 198, 0.25);
+            --max-width: 1100px;
+            --font-main: 'Fredoka', sans-serif;
+            --font-headings: 'Dosis', sans-serif;
+        }
+
+
+        /* --- Estilos Globales --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-principal);
+            /* Patrón de fondo sutil tipo anime */
+            background-image: 
+                radial-gradient(var(--color-bg-badge) 1px, transparent 1px),
+                radial-gradient(var(--color-bg-badge) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            color: var(--texto-principal);
+            line-height: 1.7;
+            overflow-x: hidden; /* Para las formas decorativas */
+            
+            /* CORRECCIÓN: Declaración en una sola línea y con el hotspot (0 0 o el que use tu diseño) */
+            cursor: url("cursormoon.cur") 32 32, url("cursormoon.png") 16 16, auto;
+        }
+        
+        /* Asegurar que los elementos interactivos también mantengan el cursor personalizado con feedback visual si quieres */
+        a, button, .btn, .project-links a, .contacto-links a {
+            cursor: url("cursormoon.cur") 32 32, url("cursormoon.png") 16 16, pointer;
+        }
+
+        /* --- Animación SAKURA (Pétalos cayendo) --- */
+        .sakura-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Permite hacer clic a través de los pétalos */
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .petal {
+            position: absolute;
+            background: linear-gradient(135deg, #ffb7c5, #ff9eaf);
+            border-radius: 15px 2px 15px 2px; /* Forma de pétalo de cerezo */
+            opacity: 0.7;
+            top: -10%;
+            animation: fall linear infinite, sway ease-in-out infinite alternate;
+        }
+
+        /* Animaciones base de los pétalos */
+        @keyframes fall {
+            0% { top: -10%; opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { top: 110%; transform: rotate(180deg); opacity: 0; }
+        }
+
+        @keyframes sway {
+            0% { transform: translateX(0px) rotate(0deg); }
+            100% { transform: translateX(60px) rotate(45deg); }
+        }
+
+        /* Variaciones para cada pétalo (posición, tamaño, velocidad) */
+        .petal:nth-child(1) { left: 10%; width: 14px; height: 14px; animation-duration: 12s, 4s; animation-delay: 0s, 0s; }
+        .petal:nth-child(2) { left: 20%; width: 18px; height: 18px; animation-duration: 15s, 5s; animation-delay: 2s, 1s; filter: blur(1px); }
+        .petal:nth-child(3) { left: 30%; width: 12px; height: 12px; animation-duration: 10s, 3s; animation-delay: 4s, 2s; }
+        .petal:nth-child(4) { left: 40%; width: 20px; height: 20px; animation-duration: 18s, 6s; animation-delay: 1s, 0.5s; filter: blur(2px); }
+        .petal:nth-child(5) { left: 50%; width: 15px; height: 15px; animation-duration: 14s, 4.5s; animation-delay: 5s, 1.5s; }
+        .petal:nth-child(6) { left: 60%; width: 10px; height: 10px; animation-duration: 11s, 3.5s; animation-delay: 3s, 0.2s; }
+        .petal:nth-child(7) { left: 70%; width: 16px; height: 16px; animation-duration: 16s, 5.5s; animation-delay: 6s, 2s; filter: blur(1px); }
+        .petal:nth-child(8) { left: 80%; width: 13px; height: 13px; animation-duration: 13s, 4s; animation-delay: 0.5s, 1s; }
+        .petal:nth-child(9) { left: 90%; width: 19px; height: 19px; animation-duration: 17s, 6s; animation-delay: 2.5s, 0.8s; }
+        .petal:nth-child(10) { left: 25%; width: 15px; height: 15px; animation-duration: 14s, 4.2s; animation-delay: 7s, 3s; }
+        .petal:nth-child(11) { left: 65%; width: 17px; height: 17px; animation-duration: 15s, 5s; animation-delay: 8s, 1.2s; filter: blur(1.5px); }
+        .petal:nth-child(12) { left: 85%; width: 11px; height: 11px; animation-duration: 12s, 3.8s; animation-delay: 1.5s, 2.5s; }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+        }
+
+        /* --- Barra de Navegación --- */
+        header {
+            position: fixed;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: var(--max-width);
+            background-color: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50px;
+            z-index: 1000;
+            box-shadow: 0 8px 32px 0 rgba(255, 143, 171, 0.15);
+        }
+
+        .nav-container {
+            padding: 0.7rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: var(--font-headings);
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--texto-principal);
+            letter-spacing: -1px;
+        }
+        
+        .logo:hover { color: var(--color-acento-hover); }
+
+
+        nav a {
+            margin-left: 1.2rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            position: relative;
+            padding: 0.2rem 0;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 3px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--color-acento);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover { color: var(--color-acento); }
+        nav a:hover::after { width: 100%; }
+
+        /* --- Contenedor Principal --- */
+        main {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 8rem 2rem 2rem 2rem;
+            position: relative;
+            z-index: 10; 
+        }
+
+        section {
+            padding: 6rem 0;
+            position: relative;
+        }
+
+        h2 {
+            font-family: var(--font-headings);
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            display: inline-block;
+            color: var(--texto-principal);
+            font-weight: 700;
+        }
+
+        h2::before {
+            content: '🌸 '; 
+            font-size: 1.5rem;
+            vertical-align: middle;
+        }
+
+        h2::after {
+            content: '';
+            display: block;
+            width: 60%;
+            height: 8px;
+            background: linear-gradient(90deg, var(--color-acento), var(--color-secundario));
+            border-radius: 10px;
+            margin-top: -5px;
+        }
+
+        /* --- Sección Hero (Inicio) --- */
+        #inicio {
+            display: grid;
+            grid-template-columns: 1fr;
+            align-items: center;
+            min-height: 80vh;
+            text-align: center;
+        }
+
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.4); 
+            padding: 3rem;
+            border-radius: 3rem;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: var(--sombra-suave);
+        }
+
+        .hero-saludo {
+            background-color: var(--color-bg-badge);
+            color: var(--color-acento-hover);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15rem;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            margin-bottom: 1rem;
+        }
+
+        .hero-titulo {
+            font-family: var(--font-headings);
+            font-size: 4rem;
+            line-height: 1;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--color-acento) 0%, #ff5c8a 50%, var(--color-secundario) 100%);
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 2px rgba(255, 255, 255, 0.8));
+        }
+
+        .hero-subtitulo {
+            font-size: 1.8rem;
+            color: var(--texto-principal);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-descripcion {
+            color: var(--texto-secundario);
+            max-width: 700px;
+            margin-bottom: 3rem;
+            font-size: 1.15rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--color-acento), #ff5c8a);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 8px 20px rgba(255, 143, 171, 0.4);
+            border: 2px solid transparent;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: var(--sombra-hover);
+            background: linear-gradient(135deg, #ff5c8a, var(--color-acento));
+        }
+
+        .wave {
+            display: inline-block;
+            animation: wave-animation 2.5s infinite;
+            transform-origin: 70% 70%;
+        }
+
+        @keyframes wave-animation {
+            0% { transform: rotate( 0.0deg) }
+           10% { transform: rotate(14.0deg) }
+           20% { transform: rotate(-8.0deg) }
+           30% { transform: rotate(14.0deg) }
+           40% { transform: rotate(-4.0deg) }
+           50% { transform: rotate(10.0deg) }
+          100% { transform: rotate( 0.0deg) }
+        }
+
+        /* --- Cronología --- */
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--color-bg-badge), var(--color-acento), var(--color-secundario));
+            border-radius: 10px;
+        }
+
+        .timeline-item {
+            background: var(--bg-card);
+            padding: 2.5rem;
+            border-radius: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--sombra-suave);
+            margin-left: 50px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item::before {
+            content: '🌸';
+            position: absolute;
+            left: -42px;
+            top: 30px;
+            font-size: 1.2rem;
+            background-color: white;
+            border-radius: 50%;
+            padding: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .timeline-item:hover {
+            transform: translateX(10px);
+            box-shadow: var(--sombra-hover);
+            border-color: var(--color-acento);
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .timeline-header h3 { font-family: var(--font-headings); font-size: 1.5rem; font-weight: 700; }
+        .timeline-empresa { color: var(--color-acento-hover); font-weight: 600; font-size: 1.1rem; }
+        .timeline-fecha {
+            font-size: 0.85rem;
+            background-color: var(--color-bg-badge);
+            color: var(--color-acento-hover);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+        }
+
+        /* --- Habilidades --- */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .skill-tag {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.8);
+            padding: 1.5rem 1rem;
+            border-radius: 1.5rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1rem;
+            box-shadow: var(--sombra-suave);
+            cursor: default;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .skill-tag::before { font-size: 2rem; margin-bottom: 0.5rem; }
+
+        .skill-tag:hover {
+            background-color: white;
+            border-color: var(--color-acento);
+            color: var(--color-acento);
+            transform: translateY(-10px);
+            box-shadow: var(--sombra-hover);
+        }
+
+        /* --- Portafolio --- */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .project-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.8);
+            border-radius: 2rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--sombra-suave);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(90deg, var(--color-secundario), var(--color-acento));
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--sombra-hover);
+        }
+
+        .project-info {
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            margin-top: 10px;
+        }
+
+        .project-info h3 { font-family: var(--font-headings); margin-bottom: 1rem; font-size: 1.6rem; font-weight: 700; }
+        .project-info p { margin-bottom: 2rem; flex-grow: 1; }
+
+        .project-links { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .project-links a {
+            background-color: var(--color-bg-badge);
+            color: var(--color-acento-hover);
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .project-links a:hover {
+            background-color: var(--color-acento);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* --- Contacto --- */
+        .contacto-container {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(15px);
+            border: 2px solid white;
+            padding: 4rem 2rem;
+            border-radius: 2.5rem;
+            text-align: center;
+            box-shadow: var(--sombra-suave);
+            position: relative;
+        }
+
+        .contacto-container p { font-size: 1.2rem; max-width: 650px; margin: 0 auto 3rem auto; font-weight: 500; }
+
+        .contacto-links { display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; }
+        .contacto-links a {
+            background-color: white;
+            border: 2px solid var(--color-bg-badge);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-size: 1.1rem;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+        }
+
+        .contacto-links a:hover { color: white; border-color: transparent; transform: translateY(-5px); }
+        .contacto-links a.mail:hover { background-color: var(--color-acento); box-shadow: 0 8px 20px rgba(255, 143, 171, 0.3); }
+        .contacto-links a.linkedin:hover { background-color: #0077b5; }
+        .contacto-links a.github:hover { background-color: #333; }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 3rem;
+            color: var(--texto-secundario);
+            font-size: 0.95rem;
+            border-top: 1px solid rgba(255,255,255,0.4);
+            background-color: rgba(255, 255, 255, 0.3);
+            margin-top: 4rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* --- Responsivo --- */
+        @media (max-width: 768px) {
+            :root { --max-width: 100%; }
+            main { padding-top: 7rem; }
+            .hero-titulo { font-size: 2.8rem; }
+            .hero-content { padding: 2rem 1rem; }
+            header { width: 95%; top: 10px; }
+            .nav-container { padding: 0.5rem 1rem; flex-direction: column; gap: 0.5rem; }
+            nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
+            nav a { margin: 0 0.5rem; font-size: 0.85rem; }
+            .timeline::before { left: 10px; }
+            .timeline-item { margin-left: 30px; padding: 1.5rem; }
+            .timeline-item::before { left: -32px; font-size: 1rem; }
+            .skills-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+        }
+    
+        .cursor-glow {
+            position: fixed;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(
+                circle,
+                rgba(255,182,193,0.35) 0%,
+                rgba(255,182,193,0.15) 35%,
+                transparent 70%
+            );
+            border-radius: 50%;
+            pointer-events: none; 
+            transform: translate(-50%, -50%);
+            z-index: 9999; 
+            mix-blend-mode: screen;
+            transition: transform 0.08s linear;
+            filter: blur(20px);
+            animation: pulseGlow 3s infinite alternate;
+        }
+        
+        @keyframes pulseGlow {
+            from { transform: translate(-50%, -50%) scale(1); }
+            to { transform: translate(-50%, -50%) scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sakura-container">
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+    </div>
+
+    <header>
+        <div class="nav-container">
+            <a href="#inicio" class="logo">carmen<span style="color: var(--color-acento);">.dev</span> 🌸</a>
+            <nav>
+                <a href="#experiencia">Trayectoria</a>
+                <a href="#habilidades">Skills</a>
+                <a href="#proyectos">Proyectos</a>
+                <a href="#contacto">Contacto</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="cursor-glow"></div>
+
+        <section id="inicio">
+            <div class="hero-content">
+                <p class="hero-saludo">¡Bienvenid@ Jugador! <span class="wave">👋</span></p>
+                <h1 class="hero-titulo">Carmen Terrón Robles</h1>
+                <p class="hero-subtitulo">Desarrolladora Web & QA Tester</p>
+                <p class="hero-descripcion">
+                    Me apasiona crear soluciones web eficientes, limpias y con experiencias de usuario intuitivas. 
+                    Con trasfondo en sistemas, disfruto llevando al límite las aplicaciones para encontrar fallos y asegurar su mejor versión. 
+                    Básicamente: si se puede programar, lo construyo; si se puede romper, ¡lo encuentro! 😉
+                </p>
+                <a href="#contacto" class="btn">¿Hablamos? 💌</a>
+            </div>
+        </section>
+
+        <section id="experiencia">
+            <h2>Mi Trayectoria Escolar</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-header">
+                        <div>
+                            <h3>Desarrollo de Aplicaciones Web</h3>
+                            <p class="timeline-empresa">🛠️ UNAWEB (Prácticas FP Superior)</p>
+                        </div>
+                        <span class="timeline-fecha">2026 - Presente</span>
+                    </div>
+                    <p>Diseñando, optimizando y ejecutando planes de pruebas críticos para el software interno de la empresa, garantizando que el despliegue a producción sea impecable.</p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-header">
+                        <div>
+                            <h3>Formación de Grado Superior en ASIR</h3>
+                            <p class="timeline-empresa">🎓 IES Lope de Vega</p>
+                        </div>
+                        <span class="timeline-fecha">2022 - 2024</span>
+                    </div>
+                    <p>Especialización en Administración de Sistemas Informáticos en Red. Para el proyecto de fin de grado, diseñé e implementé una arquitectura completa de redes privadas virtuales (VPN) seguras.</p>
+                </div>       
+            </div>
+            
+            <br>
+            <h2>Mi Trayectoria Laboral</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-header">
+                        <div>
+                            <h3>Software Tester - QA Manual Tester</h3>
+                            <p class="timeline-empresa">🔍 OPINATOR - Innology Ventures SL</p>
+                        </div>
+                        <span class="timeline-fecha">Jun 2024 - May 2025</span>
+                    </div>
+                    <p style="margin-bottom: 0.8rem;">
+                        Rol enfocado en asegurar la calidad del software. Aprendí a generar planes de pruebas robustos para diferentes módulos de la plataforma y a liderar la ejecución de pruebas durante la subida de nuevas versiones.
+                    </p>
+                    <p>
+                        Además, gestionaba incidencias técnicas y configuraba procesos ETL procesando grandes volúmenes de datos en formatos JSON y CSV de forma diaria.
+                    </p>
+                </div>
+                
+                <br>
+                <div class="timeline-item">
+                    <div class="timeline-header">
+                        <div>
+                            <h3>Teleoperadora</h3>
+                            <p class="timeline-empresa">🔍 Marktel Global Services</p>
+                        </div>
+                        <span class="timeline-fecha">Octubre 2021 - Marzo 2023 </span>
+                    </div>
+
+                    <p style="margin-bottom: 1rem;">Principales habilidades adquiridas:</p>
+                    <ul style="padding-left: 1.5rem; margin-bottom: 1rem;">
+                        <li>Gestión y recepción de llamadas</li>
+                        <li>Información de servicios y gestión de incidencias</li>
+                        <li>Atención y soporte al cliente</li>
+                        <li>Resolución de problemas y comunicación efectiva</li>
+                    </ul>
+                    <p>
+                        Experiencia en atención al cliente, resolución de incidencias y gestión de comunicaciones en entornos de alta demanda.
+                    </p>
+                </div>
+            </div>
+               
+            <br>
+            <h2>Mis Misiones Complementarias</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-header">
+                        <div>
+                            <h3>Curso de introductorio para la preparación del CCNA-Cisco (SEPE)</h3>
+                            <p class="timeline-empresa">🎓 TAJAMAR </p>
+                        </div>
+                        <span class="timeline-fecha">Verano - 2025</span>
+                    </div>
+                    <p>Reforcé mis conocimientos acerca de Redes informáticas.</p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-header">
+                        <div>
+                            <h3>Programación SQL y Bases de Datos Relacionales (SEPE)</h3>
+                            <p class="timeline-empresa">🎓 CDM Formación - Alcorcón</p>
+                        </div>
+                        <span class="timeline-fecha">Verano - 2025</span>
+                    </div>
+                    <p>Mi proyecto de final de curso fue la obtención de estadísticas de un juego(League of Legends) mediante un ETL.</p>
+                </div>       
+            </div>
+        </section>
+
+        <section id="habilidades">
+            <h2>Mis Súper Poderes</h2>
+            <div class="skills-grid">
+                <div class="skill-tag">☕ Java</div>
+                <div class="skill-tag">🌐 HTML5 & CSS3</div>
+                <div class="skill-tag">🐙 Git & GitHub</div>
+                <div class="skill-tag">🗄️ SQL / NoSQL</div>
+                <div class="skill-tag">🔍 QA Testing</div>
+                <div class="skill-tag">⚙️ Procesos ETL</div>
+                <div class="skill-tag">🛠️ JSON & CSV</div>
+                <div class="skill-tag">🔒 Redes & VPNs</div>
+            </div>
+        </section>
+
+        <section id="proyectos">
+            <h2>Misiones completadas</h2>
+            <div class="section-description">
+                <p>
+                    Aquí encontrarás algunos de los proyectos en los que he trabajado, enfocados en desarrollo web, testing y tratamiento de datos. 
+                    Cada uno de ellos me ha permitido seguir aprendiendo, experimentar con nuevas tecnologías y reforzar mi forma de resolver problemas de manera práctica y creativa 🌸
+                </p>
+            </div>
+            <br>
+            <div class="portfolio-grid">
+                <div class="project-card">
+                    <div class="project-info">
+                        <h3>Plataforma E-Commerce</h3>
+                        <p>Una tienda en línea completa construida pensando en el rendimiento. Incluye pasarela de pagos integrada, carrito reactivo y panel de gestión de inventario.</p>
+                        <div class="project-links">
+                            <a href="#" target="_blank">🚀 Demo</a>
+                            <a href="#" target="_blank">💻 Código</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-info">
+                        <h3>Gestor de Tareas Kanban</h3>
+                        <p>Aplicación de productividad inspirada en flujos de trabajo ágiles. Permite organizar tareas grupales en columnas dinámicas y asignar responsables.</p>
+                        <div class="project-links">
+                            <a href="#" target="_blank">🚀 Demo</a>
+                            <a href="#" target="_blank">💻 Código</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-info">
+                        <h3>Dashboard Meteorológico</h3>
+                        <p>Un panel interactivo que consume APIs del clima en tiempo real para mostrar previsiones detalladas con gráficos dinámicos y limpios.</p>
+                        <div class="project-links">
+                            <a href="#" target="_blank">🚀 Demo</a>
+                            <a href="#" target="_blank">💻 Código</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contacto">
+            <h2>¿Trabajamos juntos?</h2>
+            <div class="contacto-container">
+                <p>¿Buscas una desarrolladora con mentalidad analítica que pueda programar y asegurar la calidad de tu plataforma? ¡Escríbeme! 🌸</p>
+                <div class="contacto-links">
+                    <a href="mailto:ctrmu11@gmail.com" class="mail">📧 ctrmu11@gmail.com</a>
+                    <a href="https://linkedin.com/in/tuusuario" target="_blank" class="linkedin">🔗 LinkedIn</a>
+                    <a href="https://github.com/cterron074" target="_blank" class="github">💻 GitHub</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2026 Carmen Terrón Robles. Hecho con ganas y código limpio 🌸</p>
+    </footer>
+
+    <script>
+        const glow = document.querySelector('.cursor-glow');
+        document.addEventListener('mousemove', (e) => {
+            glow.style.left = `${e.clientX}px`;
+            glow.style.top = `${e.clientY}px`;
+        });
+    </script>
+</body>
+</html>
