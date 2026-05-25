@@ -42,12 +42,12 @@
             overflow-x: hidden; /* Para las formas decorativas */
             
             /* CORRECCIÓN: Declaración en una sola línea y con el hotspot (0 0 o el que use tu diseño) */
-            cursor: url("cursormoon.cur") 32 32, url("cursormoon.png") 16 16, auto;
+            cursor: url("cursores/cursormoon.cur") 32 32 auto, url("cursores/cursormoon.png") 16 16, auto;
         }
         
         /* Asegurar que los elementos interactivos también mantengan el cursor personalizado con feedback visual si quieres */
         a, button, .btn, .project-links a, .contacto-links a {
-            cursor: url("cursormoon.cur") 32 32, url("cursormoon.png") 16 16, pointer;
+            cursor: url("cursores/cursormoon.cur") 32 32 pointer, url("cursores/cursormoon.png") 16 16, pointer;
         }
 
         /* --- Animación SAKURA (Pétalos cayendo) --- */
@@ -518,27 +518,9 @@
             .timeline-item { margin-left: 30px; padding: 1.5rem; }
             .timeline-item::before { left: -32px; font-size: 1rem; }
             .skills-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
-        }
+     a   }
     
-        .cursor-glow {
-            position: fixed;
-            width: 250px;
-            height: 250px;
-            background: radial-gradient(
-                circle,
-                rgba(255,182,193,0.35) 0%,
-                rgba(255,182,193,0.15) 35%,
-                transparent 70%
-            );
-            border-radius: 50%;
-            pointer-events: none; 
-            transform: translate(-50%, -50%);
-            z-index: 9999; 
-            mix-blend-mode: screen;
-            transition: transform 0.08s linear;
-            filter: blur(20px);
-            animation: pulseGlow 3s infinite alternate;
-        }
+        
         
         @keyframes pulseGlow {
             from { transform: translate(-50%, -50%) scale(1); }
