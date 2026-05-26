@@ -127,4 +127,5 @@ def get_recent_matches():
 
 if __name__ == '__main__':
     # Ejecuta el servidor local en modo desarrollo en el puerto 5000
-    app.run(host='127.0.0.1', port=5000, debug=True)
+   app.run(host='0.0.0.0', port=8085, debug=True, use_reloader=False)
+   @app.route('http://localhost:8085/api/stats', methods=['GET'])
