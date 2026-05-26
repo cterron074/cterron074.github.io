@@ -1,19 +1,108 @@
 import os
 import pandas as pd
+import numpy as np
 from sqlalchemy import create_engine
-from dotenv import load_dotenv
 
-# Cargar variables del .env
-load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
+# ==========================================
+# CONFIGURACIÓN DE CONEXIÓN Y RUTA
+# ==========================================
+DB_USER = "root"
+DB_PASSWORD = "tu_password"  # <-- Cambia esto por tu contraseña de MySQL
+DB_HOST = "localhost"
+DB_PORT = "3306"
+DB_NAME = "lol_ranked_s15"
+
+RUTA_DATA = r"C:\etl\data"
+ARCHIVO_ORIGEN = "data.csv"
+
+def get_db_engine():
+    connection_string = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    return create_engine(connection_string)
 
 def run_etl():
-    engine = create_engine(f"mysql+pymysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@localhost/{os.getenv('DB_NAME')}")
-    df = pd.read_csv(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'data.csv'))
+    engine = get_db_engine()
+    path_origen = os.path.join(RUTA_DATA, ARCHIVO_ORIGEN)
     
-    # Aquí iría tu lógica de carga a SQL
-    print("Cargando datos a MySQL...")
-    # df.to_sql('Participants', engine, if_exists='append', index=False)
-    print("ETL Finalizado.")
+    if not os.path.exists(path_origen):
+        print(f"[Error] No se encontró el archivo '{ARCHIVO_ORIGEN}' en la ruta: {path_origen}")
+        return
+
+    print(f"Leyendo origen de datos desde: {path_origen}...")
+    df_raw = pd.read_csv(path_origen)
+    
+    # Tratamiento seguro de fechas
+    if "mastery_lastPlayTime" in df_raw.columns:
+        # Convertir a numérico, tratar el 0 y valores faltantes de manera segura antes de pasar a datetime
+        df_raw["mastery_lastPlayTime"] = pd.to_numeric(df_raw["mastery_lastPlayTime"], errors="coerce")
+        df_raw["mastery_lastPlayTime"] = df_raw["mastery_lastPlayTime"].replace(0, np.nan)
+        df_raw["mastery_lastPlayTime"] = pd.to_datetime(df_raw["mastery_lastPlayTime"], unit="ms", errors="coerce")
+        # Cambiar NaT por None para compatibilidad nativa con el driver de MySQL (NULL)
+        df_raw["mastery_lastPlayTime"] = df_raw["mastery_lastPlayTime"].where(df_raw["mastery_lastPlayTime"].notnull(), None)
+
+    if "start_utc" in df_raw.columns:
+        df_raw["start_utc"] = pd.to_datetime(df_raw["start_utc"], errors="coerce")
+
+    # 1. TABLA: Teams
+    print("Cargando dimensión 'Teams'...")
+    df_teams = df_raw[["team_name"]].dropna().drop_duplicates()
+    df_teams.to_sql("Teams", con=engine, if_exists="append", index=False)
+
+    # 2. TABLA: Champions
+    print("Cargando dimensión 'Champions'...")
+    df_champs = df_raw[["champion_id", "champion_name"]].dropna().drop_duplicates(subset=["champion_id"])
+    df_champs.to_sql("Champions", con=engine, if_exists="append", index=False)
+
+    # 3. TABLA: Games
+    print("Cargando entidad 'Games'...")
+    cols_games = ["game_id", "start_utc", "duration", "queue", "platform_id", "map_id", "game_mode", "game_version"]
+    df_games = df_raw[cols_games].drop_duplicates(subset=["game_id"])
+    df_games.to_sql("Games", con=engine, if_exists="append", index=False)
+
+    # Recuperar el mapa de IDs autoincrementales generados por la base de datos
+    df_db_teams = pd.read_sql("SELECT team_id, team_name FROM Teams", con=engine)
+
+    # 4. TABLA: GameTeams
+    print("Cargando relación 'GameTeams'...")
+    df_gt_raw = df_raw[["game_id", "team_name", "side"]].drop_duplicates(subset=["game_id", "side"])
+    df_gameteams = pd.merge(df_gt_raw, df_db_teams, on="team_name", how="inner")[["game_id", "team_id", "side"]]
+    df_gameteams.to_sql("GameTeams", con=engine, if_exists="append", index=False)
+
+    # 5. TABLA: Participants
+    print("Cargando detalle 'Participants'...")
+    all_part_cols = [
+        "participant_id", "game_id", "champion_id", "side", "position", "win",
+        "kills", "deaths", "assists", "kda_ratio", "kill_participation", 
+        "gold_earned", "gold_spent", "gold_per_min", "damage_dealt", "damage_per_min",
+        "damage_to_champ", "damage_champ_per_min", "damage_taken", "vision_score",
+        "item0", "item1", "item2", "item3", "item4", "item5", "item6",
+        "solo_tier", "solo_rank", "solo_lp", "solo_wins", "solo_losses",
+        "flex_tier", "flex_rank", "flex_lp", "flex_wins", "flex_losses",
+        "mastery_level", "mastery_points", "mastery_lastPlayTime", 
+        "mastery_pointsSinceLastLevel", "mastery_pointsUntilNextLevel", "mastery_tokens",
+        "final_abilityHaste", "final_abilityPower", "final_armor", "final_attackDamage",
+        "final_attackSpeed", "final_movementSpeed", "final_health", "final_healthMax",
+        "final_lifesteal", "final_omnivamp", "final_power", "final_powerMax", "final_spellVamp"
+    ]
+    cols_presentes = [c for c in all_part_cols if c in df_raw.columns]
+    df_part = pd.merge(df_raw[cols_presentes + ["team_name"]], df_db_teams, on="team_name", how="inner")
+    df_part = df_part.drop_duplicates(subset=["game_id", "participant_id"])[cols_presentes + ["team_id"]]
+    
+    # Asegurar el reemplazo final de tipos float extraños por None (NULL en la BD)
+    df_part = df_part.replace({np.nan: None, 'None': None, 'nan': None})
+    
+    df_part.to_sql("Participants", con=engine, if_exists="append", index=False)
+
+    # 6. TABLA: TeamStats
+    print("Cargando métricas 'TeamStats'...")
+    cols_stats = ["game_id", "side", "team_baronKills", "team_dragonKills", "team_towerKills", "team_champKills", "team_riftHeraldKills", "team_inhibitorKills"]
+    df_ts_raw = df_raw[cols_stats + ["team_name"]].drop_duplicates(subset=["game_id", "side"])
+    df_ts = pd.merge(df_ts_raw, df_db_teams, on="team_name", how="inner")[cols_stats + ["team_id"]]
+    df_ts.to_sql("TeamStats", con=engine, if_exists="append", index=False)
 
 if __name__ == "__main__":
-    run_etl()
+    print("=== INICIANDO REINTENTO PIPELINE ===")
+    try:
+        run_etl()
+        print("=== PROCESO FINALIZADO CON ÉXITO SIN ERRORES ===")
+    except Exception as e:
+        print(f"\n[ERROR CRÍTICO DEL ETL]: {e}")

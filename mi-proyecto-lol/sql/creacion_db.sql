@@ -1,23 +1,24 @@
+DROP DATABASE IF EXISTS lol_ranked_s15;
 CREATE DATABASE lol_ranked_s15;
 USE lol_ranked_s15;
 
--- Tabla de organizaciones/equipos
+-- 1. Tabla de organizaciones/equipos
 CREATE TABLE Teams (
     team_id INT PRIMARY KEY AUTO_INCREMENT,
     team_name VARCHAR(100) NOT NULL UNIQUE
 );
 
--- Tabla de campeones
+-- 2. Tabla de campeones
 CREATE TABLE Champions (
     champion_id INT PRIMARY KEY,
     champion_name VARCHAR(50) NOT NULL UNIQUE
 );
 
--- Tabla de partidas
+-- 3. Tabla de partidas
 CREATE TABLE Games (
     game_id BIGINT PRIMARY KEY,
     start_utc DATETIME NOT NULL,
-    duration INT NOT NULL CHECK (duration > 0),
+    duration INT NOT NULL,
     queue VARCHAR(50) NOT NULL,
     platform_id VARCHAR(10) NOT NULL,
     map_id INT NOT NULL,
@@ -25,7 +26,7 @@ CREATE TABLE Games (
     game_version VARCHAR(50) NOT NULL
 );
 
--- Relación partida-equipo con side
+-- 4. Relación partida-equipo con side
 CREATE TABLE GameTeams (
     game_id BIGINT NOT NULL,
     team_id INT NOT NULL,
@@ -35,14 +36,14 @@ CREATE TABLE GameTeams (
     FOREIGN KEY (team_id) REFERENCES Teams(team_id) ON DELETE CASCADE
 );
 
--- Jugadores en partida
+-- 5. Jugadores en partida
 CREATE TABLE Participants (
-    participant_id INT NOT NULL CHECK (participant_id BETWEEN 1 AND 10),
+    participant_id INT NOT NULL,
     game_id BIGINT NOT NULL,
     champion_id INT NOT NULL,
     team_id INT NOT NULL,
     side ENUM('BLUE','RED') NOT NULL,
-    position ENUM('TOP','JUNGLE','MIDDLE','BOTTOM','UTILITY'),
+    position ENUM('TOP','JUNGLE','MIDDLE','BOTTOM','SUPPORT','UTILITY'),
     win BOOLEAN NOT NULL,
     kills INT DEFAULT 0,
     deaths INT DEFAULT 0,
@@ -77,7 +78,7 @@ CREATE TABLE Participants (
     flex_losses INT DEFAULT 0,
     mastery_level INT DEFAULT 0,
     mastery_points INT DEFAULT 0,
-    mastery_lastPlayTime DATETIME,
+    mastery_lastPlayTime DATETIME NULL, -- Permitir explícitamente nulos
     mastery_pointsSinceLastLevel INT DEFAULT 0,
     mastery_pointsUntilNextLevel INT DEFAULT 0,
     mastery_tokens INT DEFAULT 0,
@@ -101,17 +102,17 @@ CREATE TABLE Participants (
     FOREIGN KEY (game_id, side) REFERENCES GameTeams(game_id, side)
 );
 
--- Estadísticas globales por equipo en la partida
+-- 6. Estadísticas globales por equipo
 CREATE TABLE TeamStats (
     game_id BIGINT NOT NULL,
     team_id INT NOT NULL,
     side ENUM('BLUE','RED') NOT NULL,
-    baron_kills INT DEFAULT 0,
-    dragon_kills INT DEFAULT 0,
-    tower_kills INT DEFAULT 0,
-    champ_kills INT DEFAULT 0,
-    riftHerald_kills INT DEFAULT 0,
-    inhibitor_kills INT DEFAULT 0,
+    team_baronKills INT DEFAULT 0,
+    team_dragonKills INT DEFAULT 0,
+    team_towerKills INT DEFAULT 0,
+    team_champKills INT DEFAULT 0,
+    team_riftHeraldKills INT DEFAULT 0,
+    team_inhibitorKills INT DEFAULT 0,
     PRIMARY KEY (game_id, side),
     FOREIGN KEY (game_id, side) REFERENCES GameTeams(game_id, side),
     FOREIGN KEY (team_id) REFERENCES Teams(team_id)
