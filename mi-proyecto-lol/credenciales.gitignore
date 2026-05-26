@@ -1,0 +1,12 @@
+# Credenciales y entornos
+.env
+*.pyc
+__pycache__/
+
+# Archivos de base de datos y CSVs
+data.csv
+*.db
+
+# Entornos virtuales
+venv/
+.env/
