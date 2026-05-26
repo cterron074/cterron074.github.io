@@ -241,25 +241,22 @@
                     <div style="margin-top: 5px;">
                         <span class="tech-tag">Python</span>
                         <span class="tech-tag">Pandas</span>
-                        <span class="tech-tag">PostgreSQL</span>
-                        <span class="tech-tag">Docker</span>
-                        <span class="tech-tag">Apache Airflow</span>
                         <span class="tech-tag">SQLAlchemy</span>
-                        <span class="tech-tag">Streamlit / Dash</span>
+                        <span class="tech-tag">Flask API</span>
                     </div>
                     <h2 style="margin-top: 18px;">Arquitectura de Datos (ETL)</h2>
                     <div class="etl-flow">
                         <div class="etl-step">
                             <strong>1. Extracción</strong>
-                            Consumo de APIs externas y scraping de archivos estructurados (JSON/CSV).
+                            Consumo de archivos estructurados de League of Legends (data.csv).
                         </div>
                         <div class="etl-step">
                             <strong>2. Transformación</strong>
-                            Limpieza de nulos, normalización de métricas de la T15 y tipado de datos.
+                            Limpieza de nulos, estructuración del modelo y normalización de métricas.
                         </div>
                         <div class="etl-step">
                             <strong>3. Carga</strong>
-                            Inserción optimizada mediante bulk inserts en base de datos relacional.
+                            Inserción directa y optimizada en tu base de datos en la nube de Aiven.
                         </div>
                     </div>
                 </div>
@@ -272,23 +269,41 @@
                 Interfaz del Proyecto: Visualización en Vivo (Demo Interactiva)
             </div>
             <div class="iframe-placeholder">
-                <!-- El iframe apunta a la url solicitada -->
-                <iframe src="https://0.0.0.0/miproyecto/estadisticas" style="width:100%; height:100%; border:none; z-index:2; position:relative;"></iframe>
+                <iframe src="http://localhost:8085/api/general-stats" style="width:100%; height:100%; border:none; z-index:2; position:relative;"></iframe>
                 
-                <!-- Capa informativa de respaldo visible si la URL local/ejemplo no responde en el navegador del cliente -->
                 <div class="iframe-overlay-msg">
                     <div class="iframe-overlay-cell">
-                        <h3 style="margin:0 0 10px 0; color:#2d3748; font-size:12pt;">Entorno de Visualización en Proceso de Despliegue</h3>
-                        <p style="max-width: 500px; margin: 0 auto 15px auto; font-size: 9.5pt;">El iframe está configurado para conectar directamente con la aplicación de estadísticas de la Temporada 15 en cuanto el servidor esté activo.</p>
-                        <code style="background: #e2e8f0; padding: 4px 8px; border-radius: 4px; font-size: 9pt; color: #4a5568;">URL origen: https://0.0.0.0/miproyecto/estadisticas</code>
-                        <br>
-                        <a href="https://0.0.0.0/miproyecto/estadisticas" target="_blank" class="btn-demo">Abrir en pestaña nueva</a>
+                        <h3 style="margin:0 0 10px 0; color:#2d3748; font-size:12pt;">Datos obtenidos desde la nube (Aiven MySQL)</h3>
+                        <p style="max-width: 500px; margin: 0 auto 15px auto; font-size: 9.5pt;">Abre las herramientas de desarrollador (F12) en la pestaña 'Consola' para verificar el objeto JSON que devuelve la API.</p>
+                        
+                        <a href="http://localhost:8085/api/general-stats" target="_blank" class="btn-demo">Abrir API en pestaña nueva</a>
                     </div>
                 </div>
             </div>
         </div>
 
     </div>
+
+    <script>
+        // Realizamos la llamada a tu API de Flask
+        fetch('http://localhost:8085/api/general-stats')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Error en la respuesta de la red");
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Imprimimos los datos en la consola para asegurarnos de que llegan
+                console.log("¡Datos de Aiven cargados con éxito!", data);
+                
+                // Aquí es donde en el futuro usaremos Javascript para pintar 
+                // los datos dentro de tus bloques de HTML.
+            })
+            .catch(error => {
+                console.error("Hubo un problema al conectar con la API de Flask:", error);
+            });
+    </script>
 
 </body>
 </html>
