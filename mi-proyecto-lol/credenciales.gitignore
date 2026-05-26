@@ -10,3 +10,7 @@ data.csv
 # Entornos virtuales
 venv/
 .env/
+
+# Ignorar carpetas y archivos de datos
+data/
+data.csv
