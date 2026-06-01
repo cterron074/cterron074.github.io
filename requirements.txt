@@ -1,3 +1,5 @@
+flask==3.0.0  *(o la librería que uses)*
+gunicorn==21.2.0
 flask
 flask-cors
 gunicorn
