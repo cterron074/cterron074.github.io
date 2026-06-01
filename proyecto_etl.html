@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Estadísticas Temporada 15 - Proyecto ETL</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        /* --- CORRECCIÓN RESPONSIVA --- */
+        body {
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            color: #cdbe91; /* Dorado clásico de la interfaz de LoL */
+            background-color: #0a0e13; /* Fondo oscuro del cliente */
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            font-size: 10.5pt;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 20px 20px;
+        }
+
+        .header-banner {
+            background: linear-gradient(135deg, #120c1f 0%, #241432 50%, #091428 100%);
+            color: #f0e6d2;
+            margin: 0 0 25px 0;
+            padding: 30px 20px;
+            border-bottom: 3px solid #00d2ff; /* Línea de acento azul neón */
+            box-shadow: 0 4px 20px rgba(0, 210, 255, 0.2);
+            width: 100%;
+            text-align: left;
+        }
+
+        .header-banner h1 {
+            font-size: 24pt;
+            margin: 0 0 8px 0;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #ffffff;
+            text-shadow: 0 0 10px #00d2ff, 0 0 20px #ff007f; /* Efecto neón dual */
+        }
+
+        .header-banner p {
+            font-size: 11pt;
+            margin: 0;
+            color: #a0a5b5;
+        }
+
+        .flex-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .flex-col {
+            flex: 1 1 calc(50% - 10px);
+            min-width: 300px;
+            display: flex;
+        }
+
+        @media (max-width: 768px) {
+            .flex-col {
+                flex: 1 1 100%;
+            }
+        }
+
+        h2 {
+            font-size: 13pt;
+            color: #00d2ff;
+            margin-top: 0;
+            margin-bottom: 15px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #32281e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        p {
+            margin: 0 0 12px 0;
+            color: #a0a5b5;
+            text-align: justify;
+        }
+
+        .card {
+            background: #111722;
+            border-radius: 4px;
+            padding: 18px;
+            border: 1px solid #322aa2;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.6), 0 5px 15px rgba(0,0,0,0.5);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tech-tag {
+            display: inline-block;
+            background: #1a2233;
+            color: #00d2ff;
+            padding: 4px 10px;
+            border-radius: 2px;
+            font-size: 8.5pt;
+            font-weight: 600;
+            margin-right: 6px;
+            margin-bottom: 8px;
+            border: 1px solid #00d2ff;
+            text-shadow: 0 0 5px rgba(0, 210, 255, 0.5);
+        }
+
+        .etl-flow {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0 5px 0;
+            width: 100%;
+        }
+
+        .etl-step {
+            flex: 1 1 calc(33.33% - 7px);
+            min-width: 200px;
+            background: #161d2b;
+            border-left: 3px solid #ff007f;
+            padding: 12px;
+            font-size: 9pt;
+            border-top: 1px solid #253147;
+            border-bottom: 1px solid #253147;
+            border-right: 1px solid #253147;
+        }
+
+        .etl-step strong {
+            color: #ff007f;
+            display: block;
+            margin-bottom: 4px;
+            font-size: 9.5pt;
+            text-transform: uppercase;
+        }
+
+        /* --- NUEVOS ESTILOS PARA LOS RESULTADOS DINÁMICOS --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #322aa2;
+        }
+
+        .stat-box {
+            background: #161d2b;
+            border: 1px solid #253147;
+            padding: 15px;
+            text-align: center;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-box:hover {
+            border-color: #00d2ff;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.2);
+        }
+
+        .stat-title {
+            display: block;
+            color: #a0a5b5;
+            font-size: 9pt;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            display: block;
+            color: #f0e6d2;
+            font-size: 20pt;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(240, 230, 210, 0.5);
+        }
+
+        /* Colores específicos para métricas */
+        #win-rate { color: #00d2ff; text-shadow: 0 0 10px rgba(0, 210, 255, 0.5); }
+        #ganadas { color: #00ff9d; text-shadow: 0 0 10px rgba(0, 255, 157, 0.5); }
+
+        .alert-box {
+            background-color: #1e1a15;
+            border-left: 4px solid #c8aa6e;
+            color: #a0a5b5;
+            padding: 12px;
+            margin-top: auto;
+            margin-bottom: 0;
+            border-radius: 0 4px 4px 0;
+            font-size: 9.5pt;
+        }
+
+        .alert-box strong {
+            color: #c8aa6e;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-banner">
+        <div class="container" style="padding: 0; max-width: 1200px;">
+            <h1>Pipeline ETL: Estadísticas de la Temporada 15</h1>
+            <p>Automatización de extracción, transformación y almacenamiento de métricas de rendimiento deportivo.</p>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div class="flex-grid">
+            <div class="flex-col">
+                <div class="card">
+                    <h2>Descripción del Proyecto</h2>
+                    <p>Este proyecto implementa una infraestructura completa de datos diseñada para capturar, procesar y consolidar las estadísticas complejas de la 
+                        
+                    <strong>Temporada 15</strong>. El objetivo principal es transformar datos brutos provenientes de múltiples fuentes en un repositorio estructurado óptimo para el análisis analítico y de rendimiento.</p>
+
+                    <h3 style="color: #00d2ff; margin-top: 25px; margin-bottom: 5px; font-size: 11pt; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px dashed #322aa2; padding-bottom: 10px;">
+                        📊 Resultados Extraídos
+                    </h3>
+
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <span class="stat-title">Total Partidas</span>
+                            <span class="stat-value" id="total-partidas">--</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-title">Campeones Únicos</span>
+                            <span class="stat-value" id="total-campeones">--</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-title">Duración Media</span>
+                            <span class="stat-value" id="duracion-media">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-col">
+                <div class="card">
+                    <h2>Tecnologías Utilizadas</h2>
+                    <div style="margin-top: 5px;">
+                        <span class="tech-tag">Python</span>
+                        <span class="tech-tag">Pandas</span>
+                        <span class="tech-tag">Flask API</span>
+                        <span class="tech-tag">Aiven Cloud</span>
+                        <span class="tech-tag">MySQL</span>
+                    </div>
+                    
+                    <h2 style="margin-top: 22px;">Arquitectura de Datos (ETL)</h2>
+                    <div class="etl-flow">
+                        <div class="etl-step">
+                            <strong>1. Extracción</strong>
+                            Consumo de archivos estructurados de League of Legends (data.csv).
+                        </div>
+                        <div class="etl-step">
+                            <strong>2. Transformación</strong>
+                            Limpieza de nulos, estructuración y normalización de métricas T15.
+                        </div>
+                        <div class="etl-step">
+                            <strong>3. Carga</strong>
+                            Inserción directa y optimizada en base de datos cloud (Aiven).
+                        </div>
+                    </div>
+                    
+                    <div class="alert-box" style="margin-top: 15px;">
+                        <strong>Estado de conexión:</strong> Enlazado con éxito a la API local de Flask.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+       // Realizamos la llamada a tu API local
+        fetch('http://localhost:8085/api/general-stats')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Error en la respuesta del servidor");
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Datos recibidos de Aiven:", data);
+                
+                // Mapeo directo de TUS variables exactas del JSON
+                document.getElementById('total-partidas').innerText = data.total_games;
+                document.getElementById('total-campeones').innerText = data.total_champions;
+                document.getElementById('duracion-media').innerText = data.avg_duration_minutes + " min";
+            })
+            .catch(error => {
+                console.error("Error al conectar con Flask:", error);
+                document.getElementById('total-partidas').innerText = "Error";
+                document.getElementById('total-campeones').innerText = "Offline";
+                document.getElementById('duracion-media').innerText = "Offline";
+            });
+    </script>
+
+</body>
+</html>
