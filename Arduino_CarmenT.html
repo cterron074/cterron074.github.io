@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EcoStation — Estación de Monitoreo Ambiental Arduino</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,300&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    /* Nueva paleta con fondo verde clarito orgánico */
+    --bg: #eef5ee;
+    --bg2: #ffffff;
+    --bg3: #e2ebe2;
+    --border: #c2dec2;
+    --text: #1b2e1b;
+    --muted: #4a634a;
+    --accent-green: #1e7a1e;
+    --accent-cyan: #025ca1;
+    --accent-amber: #8a5700;
+    --accent-pink: #b81422;
+    --accent-violet: #6639b3;
+    --mono: 'Space Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.7;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* 🌾 EFECTO DIENTE DE LEÓN EN EL VIENTO (Estilo naturalista con mayor presencia) */
+  .dandelion-field {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .dandelion-seed {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: windFly 16s linear infinite, windSway 4s ease-in-out infinite;
+    /* Opacidad incrementada para que se vean más definidos */
+    opacity: 0.95;
+    /* Sombra con tono bosque profundo para un relieve natural */
+    filter: drop-shadow(1px 3px 5px rgba(27, 46, 27, 0.15));
+  }
+
+  /* Paracaídas plumoso superior (Blanco botánico con mayor densidad interna) */
+  .dandelion-seed .tuft {
+    width: 16px;
+    height: 9px;
+    background: radial-gradient(ellipse at bottom, rgba(255,255,255,1) 0%, rgba(245,250,245,0.8) 50%, rgba(240,245,240,0.2) 85%, transparent 100%);
+    border-radius: 50% 50% 0 0;
+    position: relative;
+  }
+  
+  /* Filamento fino texturizado (Tono oliva/marrón orgánico con mayor contraste) */
+  .dandelion-seed .stem {
+    width: 1.5px;
+    height: 20px;
+    background: linear-gradient(to bottom, rgba(85,107,47,0.85), rgba(107,142,35,0.4), rgba(107,142,35,0.05));
+  }
+
+  /* Distribución y comportamiento orgánico equilibrado */
+  .dandelion-seed:nth-child(1) { top: 12%;  left: -5%;  transform: scale(0.95); animation-duration: 13s, 3.5s; animation-delay: 0s, 0s; }
+  .dandelion-seed:nth-child(2) { top: 32%;  left: -5%;  transform: scale(0.75); animation-duration: 18s, 4.2s; animation-delay: 3s, 0.5s; opacity: 0.7; }
+  .dandelion-seed:nth-child(3) { top: 55%;  left: -5%;  transform: scale(1.15); animation-duration: 11s, 2.8s; animation-delay: 1s, 1.2s; }
+  .dandelion-seed:nth-child(4) { top: 78%;  left: -5%;  transform: scale(0.85); animation-duration: 15s, 4.8s; animation-delay: 6s, 0s; opacity: 0.8; }
+  .dandelion-seed:nth-child(5) { top: 22%;  left: -10%; transform: scale(1.25); animation-duration: 10s, 3s;   animation-delay: 8s, 2s; }
+  .dandelion-seed:nth-child(6) { top: 45%;  left: -5%;  transform: scale(0.65); animation-duration: 22s, 5s;   animation-delay: 4s, 1.5s; opacity: 0.6; }
+  .dandelion-seed:nth-child(7) { top: 68%;  left: -5%;  transform: scale(1.0);  animation-duration: 14s, 3.7s; animation-delay: 11s, 0.8s; }
+  .dandelion-seed:nth-child(8) { top: 88%;  left: -5%;  transform: scale(0.8);  animation-duration: 16s, 4.1s; animation-delay: 14s, 0.3s; }
+
+  @keyframes windFly {
+    0% { left: -10%; transform: translateY(0) rotate(25deg); }
+    100% { left: 110%; transform: translateY(-140px) rotate(65deg); }
+  }
+
+  @keyframes windSway {
+    0%, 100% { margin-top: 0px; margin-left: 0px; }
+    50% { margin-top: 35px; margin-left: 15px; }
+  }
+
+  /* NAV */
+  nav {
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    background: rgba(238,245,238,0.92);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+  }
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent-green);
+    letter-spacing: .05em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+  }
+  .nav-logo::before {
+    content: '';
+    width: 8px; height: 8px;
+    background: var(--accent-green);
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(30,122,30,0.4);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .nav-links a { color: inherit; text-decoration: none; font-weight: 500; }
+  .nav-links a:hover { color: var(--text); }
+
+  /* HERO */
+  .hero {
+    padding: 7rem 2rem 5rem;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent-green);
+    background: rgba(30,122,30,0.06);
+    border: 1px solid rgba(30,122,30,0.2);
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 1.5rem;
+    letter-spacing: .08em;
+    font-weight: 700;
+  }
+  h1 {
+    font-family: var(--mono);
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    letter-spacing: -.02em;
+    color: var(--text);
+  }
+  h1 span {
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-desc {
+    font-size: 1.15rem;
+    color: var(--muted);
+    max-width: 620px;
+    margin: 0 auto 2.5rem;
+    font-weight: 400;
+    border-radius: 8px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: border-color .2s, transform .2s, box-shadow .2s;
+    box-shadow: 0 4px 12px rgba(40,60,40,0.03);
+  }
+  .hero-desc:hover { 
+    border-color: var(--muted);
+    transform: translateY(-2px); 
+    box-shadow: 0 8px 24px rgba(40,60,40,0.08); 
+  }
+  .hero-btns {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 10px 22px;
+    border-radius: 6px;
+    letter-spacing: .04em;
+    cursor: pointer;
+    transition: transform .15s, background-color .15s;
+    font-weight: 700;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn-primary {
+    background: var(--accent-green);
+    color: #ffffff;
+    border: none;
+  }
+  .btn-primary:hover { background: #165c16; }
+  .btn-outline {
+    background: var(--bg2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+  .btn-outline:hover { background: var(--bg3); border-color: var(--muted); }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+  }
+  .stat-item {
+    flex: 1;
+    max-width: 200px;
+    padding: 1.4rem 1rem;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num {
+    font-family: var(--mono);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text);
+    display: block;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  /* SECTIONS */
+  .section {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 5rem 2rem;
+    position: relative;
+    z-index: 2;
+  }
+  .section-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent-cyan);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: .6rem;
+    font-weight: 700;
+  }
+  h2 {
+    font-family: var(--mono);
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    letter-spacing: -.01em;
+    color: var(--text);
+  }
+  .section-lead {
+    color: var(--muted);
+    max-width: 640px;
+    margin-bottom: 3rem;
+    font-weight: 400;
+    font-size: 1.05rem;
+  }
+
+  /* SENSOR CARDS */
+  .sensors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .sensor-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .2s, transform .2s, box-shadow .2s;
+    box-shadow: 0 4px 12px rgba(40,60,40,0.03);
+  }
+  .sensor-card:hover { border-color: var(--muted); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(40,60,40,0.08); }
+  .sensor-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    border-radius: 12px 12px 0 0;
+  }
+  .sensor-card.soil::before { background: var(--accent-amber); }
+  .sensor-card.light::before { background: #c2950c; }
+  .sensor-card.co2::before { background: var(--accent-pink); }
+
+  .sensor-icon {
+    width: 40px; height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 1rem;
+  }
+  .sensor-card.soil .sensor-icon { background: rgba(138,87,0,0.07); }
+  .sensor-card.light .sensor-icon { background: rgba(194,149,12,0.07); }
+  .sensor-card.co2 .sensor-icon { background: rgba(184,20,34,0.07); }
+
+  .sensor-card h3 {
+    font-family: var(--mono);
+    font-size: .95rem;
+    font-weight: 700;
+    margin-bottom: .3rem;
+    color: var(--text);
+  }
+  .sensor-card .sensor-model {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: .8rem;
+    font-weight: 700;
+  }
+  .sensor-card p {
+    font-size: .9rem;
+    color: var(--muted);
+    font-weight: 400;
+    line-height: 1.6;
+  }
+  .sensor-specs {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .spec-item { display: flex; flex-direction: column; gap: 2px; }
+  .spec-key { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; font-weight: 700; }
+  .spec-val { font-family: var(--mono); font-size: 12px; color: var(--text); font-weight: 700; }
+
+  /* DEMO LIVE */
+  .demo-window {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(40,60,40,0.04);
+  }
+  .demo-titlebar {
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    padding: .6rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.r { background: var(--accent-pink); }
+  .dot.y { background: #c2950c; }
+  .dot.g { background: var(--accent-green); }
+  .demo-filename {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-left: 8px;
+    font-weight: 700;
+  }
+  .demo-body { padding: 1.5rem; }
+  .demo-readings {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 1.5rem;
+  }
+  .reading-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+  }
+  .reading-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: .4rem;
+    font-weight: 700;
+  }
+  .reading-val {
+    font-family: var(--mono);
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: .2rem;
+  }
+  .reading-val.soil { color: var(--accent-amber); }
+  .reading-val.light { color: #9e790a; }
+  .reading-val.co2 { color: var(--accent-pink); }
+  .reading-unit {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 700;
+  }
+  .chart-area {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    background: var(--bg);
+  }
+  .chart-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  .chart-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 700;
+  }
+  .chart-legend {
+    display: flex;
+    gap: 12px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    flex-wrap: wrap;
+    font-weight: 700;
+  }
+  .legend-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+  canvas { width: 100% !important; height: 180px !important; }
+
+  /* ARQUITECTURA */
+  .arch-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 640px) { .arch-grid { grid-template-columns: 1fr; } }
+  .arch-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.01);
+  }
+  .arch-card h4 {
+    font-family: var(--mono);
+    font-size: .85rem;
+    font-weight: 700;
+    margin-bottom: .8rem;
+    color: var(--accent-cyan);
+  }
+  .arch-card ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .arch-card li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: .9rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .arch-card li::before {
+    content: '→';
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent-cyan);
+    margin-top: 3px;
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+
+  /* FLOW DIAGRAM */
+  .flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+    margin: 2rem 0;
+  }
+  .flow-node {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .8rem 1.2rem;
+    text-align: center;
+    min-width: 120px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  }
+  .flow-node .fn-icon { font-size: 1.4rem; margin-bottom: .2rem; }
+  .flow-node .fn-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: .04em;
+    font-weight: 700;
+  }
+  .flow-arrow {
+    font-family: var(--mono);
+    color: var(--border);
+    font-size: 1.2rem;
+    padding: 0 8px;
+  }
+
+  /* INTERRUPTOR DE CÓDIGO */
+  .code-container {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-top: 0;
+  }
+  .code-container.open {
+    max-height: 2500px;
+    margin-top: 2rem;
+  }
+
+  .code-block {
+    background: #1e241e; 
+    border: 1px solid #2d382d;
+    border-radius: 12px;
+    overflow: hidden;
+    font-family: var(--mono);
+    font-size: 13px;
+    box-shadow: 0 10px 30px rgba(20,40,20,0.15);
+  }
+  .code-header {
+    background: #151a15;
+    border-bottom: 1px solid #2d382d;
+    padding: .6rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .code-lang {
+    font-size: 11px;
+    color: #dbb8ff;
+    letter-spacing: .06em;
+    font-weight: 700;
+  }
+  .code-copy-btn {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: #839483;
+    background: none;
+    border: 1px solid #2d382d;
+    border-radius: 4px;
+    padding: 3px 9px;
+    cursor: pointer;
+    transition: color .15s, border-color .15s;
+  }
+  .code-copy-btn:hover { color: #f0f6fc; border-color: #839483; }
+  pre {
+    padding: 1.4rem;
+    overflow-x: auto;
+    line-height: 1.8;
+    color: #cbd9cb;
+  }
+  .kw { color: #ff7b72; }
+  .fn { color: #d2a8ff; }
+  .str { color: #a5d6ff; }
+  .cmt { color: #839483; font-style: italic; }
+  .num { color: #f0883e; }
+  .type { color: #79c0ff; }
+
+  /* MATERIALES */
+  .materials-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .9rem;
+  }
+  .materials-table th {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    text-align: left;
+    padding: .7rem 1rem;
+    border-bottom: 1px solid var(--border);
+    font-weight: 700;
+  }
+  .materials-table td {
+    padding: .7rem 1rem;
+    border-bottom: 1px solid #d2ebd2;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .materials-table td:first-child { color: var(--text); font-family: var(--mono); font-size: 13px; font-weight: 700; }
+  .materials-table tr:hover td { background: var(--bg3); }
+  .qty-badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(2,92,161,0.06);
+    border: 1px solid rgba(2,92,161,0.2);
+    color: var(--accent-cyan);
+    font-weight: 700;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    font-family: var(--mono);
+    letter-spacing: .04em;
+    position: relative;
+    z-index: 2;
+    font-weight: 500;
+  }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+  @media (max-width: 600px) {
+    .demo-readings { grid-template-columns: 1fr; }
+    .stats-bar { flex-wrap: wrap; }
+    .stat-item { min-width: 50%; border-right: none; border-bottom: 1px solid var(--border); }
+    .flow { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="dandelion-field">
+  <div class="dandelion-seed"><div class="tuft"></div><div class="stem"></div></div>
+  <div class="dandelion-seed"><div class="tuft"></div><div class="stem"></div></div>
+  <div class="dandelion-seed"><div class="tuft"></div><div class="stem"></div></div>
+  <div class="dandelion-seed"><div class="tuft"></div><div class="stem"></div></div>
+  <div class="dandelion-seed"><div class="tuft"></div><div class="stem"></div></div>
+  <div class="dandelion-seed"><div class="tuft"></div><div class="stem"></div></div>
+  <div class="dandelion-seed"><div class="tuft"></div><div class="stem"></div></div>
+  <div class="dandelion-seed"><div class="tuft"></div><div class="stem"></div></div>
+</div>
+
+<nav>
+  <div class="nav-logo">ECOSO v1.0</div>
+  <ul class="nav-links">
+    <li><a href="#sensores">Sensores</a></li>
+    <li><a href="#demo">Demo</a></li>
+    <li><a href="#arquitectura">Arquitectura</a></li>
+    <li><a href="#codigo">Código</a></li>
+    <li><a href="#materiales">Materiales</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge">▶ Arduino UNO R4-WIFI</div>
+  <h1>Estación de<br><span>Monitoreo Ambiental</span></h1>
+  <p class="hero-desc">Proyecto de Arduino Realizado con un compañero de clase, el cual consiste en un
+    Sistema embebido que mide, registra y visualiza en tiempo real la humedad del suelo, la luz ambiental y el CO₂ del 
+    entorno mediante tres sensores conectados a un Arduino. Todas estas medidas se almacenan y se reflejan por pantallas LCD 2x16.
+    <br><br>
+    Todo este proyecto fue expuesto en el Stand del instituto I.E.S. Lope de Vega en la feria de <strong>'Madrid Es Ciencia 2026'.</strong>
+     Formó parte de la colaboración entre los alumnos de FP superior de Informática y los de FP superior de Ciencias.
+     En este proyecto aprendimos a integrar hardware y software, a calibrar sensores, a gestionar datos en tiempo real y a presentar resultados de forma clara y atractiva. 
+     Fue una experiencia muy enriquecedora que nos permitió aplicar nuestros conocimientos en un contexto práctico y real.
+  </p>
+  <div class="hero-btns">
+    <button class="btn btn-primary" onclick="toggleCodeSection()">Ver código fuente</button>
+    <a href="#materiales" class="btn btn-outline">Lista de materiales</a>
+  </div>
+
+</div>
+</section>
+
+<div class="stats-bar">
+  <div class="stat-item"><span class="stat-num">3</span><span class="stat-label">Sensores</span></div>
+  <div class="stat-item"><span class="stat-num">1 Hz</span><span class="stat-label">Frecuencia lectura</span></div>
+  <div class="stat-item"><span class="stat-num">CSV</span><span class="stat-label">Formato almacenamiento</span></div>
+  <div class="stat-item"><span class="stat-num">128×64</span><span class="stat-label">Pantalla OLED px</span></div>
+  <div class="stat-item"><span class="stat-num">5V</span><span class="stat-label">Alimentación</span></div>
+</div>
+
+<section class="section" id="sensores">
+  <div class="section-tag">// sensores</div>
+  <h2>Tres sensores, un sistema</h2>
+  <p class="section-lead">Cada sensor captura una dimensión clave del entorno. Los datos se muestrean cada segundo y se escriben en la tarjeta SD con marca de tiempo.</p>
+
+  <div class="sensors-grid">
+    <div class="sensor-card soil">
+      <div class="sensor-icon">🌱</div>
+      <h3>Humedad de Suelo</h3>
+      <div class="sensor-model">// Sensor: YL-69 + YL-38</div>
+      <p>Mide la resistencia eléctrica del sustrato. A mayor humedad, menor resistencia. La señal analógica se normaliza a un porcentaje de 0–100 %.</p>
+      <div class="sensor-specs">
+        <div class="spec-item"><span class="spec-key">Señal</span><span class="spec-val">Analógica</span></div>
+        <div class="spec-item"><span class="spec-key">Pin</span><span class="spec-val">A0</span></div>
+        <div class="spec-item"><span class="spec-key">Rango</span><span class="spec-val">0 – 100 %</span></div>
+        <div class="spec-item"><span class="spec-key">Tensión</span><span class="spec-val">3.3 – 5 V</span></div>
+      </div>
+    </div>
+
+    <div class="sensor-card light">
+      <div class="sensor-icon">☀️</div>
+      <h3>Luz Ambiental</h3>
+      <div class="sensor-model">// Sensor: BH1750 (I²C)</div>
+      <p>Fotorresistor digital con resolución de 1 lux. Comunica vía I²C y entrega luxes directamente, sin necesidad de calibración manual.</p>
+      <div class="sensor-specs">
+        <div class="spec-item"><span class="spec-key">Señal</span><span class="spec-val">I²C</span></div>
+        <div class="spec-item"><span class="spec-key">Dirección</span><span class="spec-val">0x23</span></div>
+        <div class="spec-item"><span class="spec-key">Rango</span><span class="spec-val">0 – 65535 lx</span></div>
+        <div class="spec-item"><span class="spec-key">Resolución</span><span class="spec-val">1 lux</span></div>
+      </div>
+    </div>
+
+    <div class="sensor-card co2">
+      <div class="sensor-icon">💨</div>
+      <h3>CO₂ Ambiental</h3>
+      <div class="sensor-model">// Sensor: MQ-135</div>
+      <p>Sensor electroquímico sensible al dióxido de carbono y otros gases. Salida analógica convertida a ppm mediante ecuación de calibración.</p>
+      <div class="sensor-specs">
+        <div class="spec-item"><span class="spec-key">Señal</span><span class="spec-val">Analógica</span></div>
+        <div class="spec-item"><span class="spec-key">Pin</span><span class="spec-val">A1</span></div>
+        <div class="spec-item"><span class="spec-key">Rango</span><span class="spec-val">10 – 10 000 ppm</span></div>
+        <div class="spec-item"><span class="spec-key">Tensión</span><span class="spec-val">5 V</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<section class="section" id="demo">
+  <div class="section-tag">// simulación en vivo</div>
+  <h2>Dashboard de lecturas</h2>
+  <p class="section-lead">Visualización en tiempo real simulando el comportamiento del sistema embebido. Los datos se actualizan cada segundo.</p>
+
+  <div class="demo-window">
+    <div class="demo-titlebar">
+      <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+      <span class="demo-filename">ecostation_monitor.ino — Serial Monitor</span>
+    </div>
+    <div class="demo-body">
+      <div class="demo-readings">
+        <div class="reading-card">
+          <div class="reading-label">Humedad Suelo</div>
+          <div class="reading-val soil" id="val-soil">--</div>
+          <div class="reading-unit">%</div>
+        </div>
+        <div class="reading-card">
+          <div class="reading-label">Luz Ambiental</div>
+          <div class="reading-val light" id="val-lux">--</div>
+          <div class="reading-unit">lux</div>
+        </div>
+        <div class="reading-card">
+          <div class="reading-label">CO₂</div>
+          <div class="reading-val co2" id="val-co2">--</div>
+          <div class="reading-unit">ppm</div>
+        </div>
+      </div>
+      <div class="chart-area">
+        <div class="chart-head">
+          <span class="chart-title">Histórico — últimos 30 s</span>
+          <div class="chart-legend">
+            <span><span class="legend-dot" style="background:var(--accent-amber)"></span>Suelo %</span>
+            <span><span class="legend-dot" style="background:#9e790a"></span>Luz ×10 lx</span>
+            <span><span class="legend-dot" style="background:var(--accent-pink)"></span>CO₂ ÷10 ppm</span>
+          </div>
+        </div>
+        <canvas id="sensorChart"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<section class="section" id="arquitectura">
+  <div class="section-tag">// arquitectura del sistema</div>
+  <h2>Cómo funciona</h2>
+  <p class="section-lead">El firmware sigue un bucle de adquisición, procesamiento y almacenamiento. Cada ciclo dura exactamente 1 segundo.</p>
+
+  <div class="flow">
+    <div class="flow-node">
+      <div class="fn-icon">🔌</div>
+      <div class="fn-label">Adquisición</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="fn-icon">⚙️</div>
+      <div class="fn-label">Procesamiento</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="fn-icon">🖥️</div>
+      <div class="fn-label">Visualización</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="fn-icon">💾</div>
+      <div class="fn-label">Almacenamiento</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="fn-icon">⏱️</div>
+      <div class="fn-label">Espera 1 s</div>
+    </div>
+  </div>
+
+  <div class="arch-grid">
+    <div class="arch-card">
+      <h4>// Adquisición de datos</h4>
+      <ul>
+        <li>Lectura analógica del YL-69 (pin A0)</li>
+        <li>Solicitud I²C al BH1750 (0x23)</li>
+        <li>Lectura analógica del MQ-135 (pin A1)</li>
+        <li>Marca de tiempo con módulo RTC DS1307</li>
+      </ul>
+    </div>
+    <div class="arch-card">
+      <h4>// Procesamiento</h4>
+      <ul>
+        <li>Mapeo ADC 0–1023 → 0–100 % (suelo)</li>
+        <li>Conversión I²C raw → lux (BH1750)</li>
+        <li>Cálculo ppm CO₂ con curva de calibración</li>
+        <li>Promedio móvil de 5 muestras</li>
+      </ul>
+    </div>
+    <div class="arch-card">
+      <h4>// Visualización</h4>
+      <ul>
+        <li>Pantalla OLED SSD1306 128×64 (I²C)</li>
+        <li>Rotación de las 3 lecturas cada 3 s</li>
+        <li>LED de alerta si CO₂ &gt; 1000 ppm</li>
+        <li>Serial monitor a 9600 baud</li>
+      </ul>
+    </div>
+    <div class="arch-card">
+      <h4>// Almacenamiento</h4>
+      <ul>
+        <li>Módulo SD SPI (pines 10–13)</li>
+        <li>Archivo <code style="color:var(--accent-violet)">data.csv</code> con cabecera</li>
+        <li>Columnas: timestamp, soil_pct, lux, co2_ppm</li>
+        <li>Cierre seguro del archivo tras cada escritura</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<section class="section" id="codigo">
+  <div class="section-tag">// código fuente principal</div>
+  <h2>ECOSO - Arduino Station</h2>
+  <p class="section-lead">Despliega el bloque para examinar o modificar el sketch de Arduino.</p>
+
+  <div style="text-align: center; margin-bottom: 1rem;">
+    <button class="btn btn-outline" id="toggle-trigger-btn" onclick="toggleCodeSection()">Desplegar código fuente ↓</button>
+    
+  <div class="code-container" id="arduino-code-wrapper">
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">ARDUINO C++</span>
+      <button class="code-copy-btn" onclick="copyCode()">Copiar</button>
+    </div>
+    <pre id="code-content">
+        #include &lt;Wire.h&gt;
+        #include &lt;Adafruit_SGP30.h&gt;
+        #include &lt;LiquidCrystal_I2C.h&gt;
+
+        // Configuración de objetos
+        Adafruit_SGP30 sgp;
+        LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+        // Pines y variables
+        const int pinSensorLuz = A1;
+        const int pinHumedadSuelo = A2;
+
+        void setup() {
+          Serial.begin(115200);
+          Wire.begin();
+        
+          lcd.init();
+          lcd.backlight();
+          lcd.print("Iniciando...");
+        
+          delay(1000);
+          lcd.clear();
+
+          Serial.begin(115200);
+          delay(2000);
+          Serial.println("SGP30 test");
+          Wire.begin();
+          Wire.setClock(100000);
+
+          // Inicialización I2C
+          Wire.begin();
+        
+          // Inicialización SGP30
+          if (!sgp.begin()){
+            Serial.println("ERROR: No se pudo encontrar el sensor SGP30.");
+            Serial.println("Verifica que esté conectado a 5V (NO a Vin) y los pines SDA/SCL.");
+            while (1); // Detener el programa si falla
+          }
+
+          Serial.println("Sensor SGP30 detectado correctamente.");
+          Serial.println("Leyendo datos cada segundo...\n");      
+
+          Serial.print("Número de serie: ");
+          Serial.print(sgp.serialnumber[0], HEX);
+          Serial.print(sgp.serialnumber[1], HEX);
+          Serial.println(sgp.serialnumber[2], HEX);
+        }
+
+        void loop() {
+          lcd.print("¡WELCOME,HI!");
+          Serial.println("--- ESTACIÓN DE MONITOREO INICIADA ---");
+          if (! sgp.begin()){
+            Serial.println("Sensor SGP30 no encontrado");
+            while (1);
+          }
+          if (! sgp.IAQmeasure()) {
+            Serial.println("Error en medición");
+            return;
+          }
+          // 2. Lectura de Luz (A1)
+          int luzRaw = analogRead(pinSensorLuz);
+          int porcLuz = map(luzRaw, 1023, 0, 0, 100);
+          porcLuz = constrain(porcLuz, 0, 100);
+          // 3. Lectura de Humedad de Suelo (A2)
+          delay(3000);
+          int sueloRaw = analogRead(pinHumedadSuelo);
+          int porcSuelo = map(sueloRaw, 1023, 250, 0, 100);
+          porcSuelo = constrain(porcSuelo, 0, 100);
+          delay(3000);
+          // Luz
+          Serial.print("LUZ   -> "); Serial.print(porcLuz); Serial.print("% ");
+          if (porcLuz < 30) {
+            Serial.println("(Ambiente Oscuro)");
+            lcd.println("Oscuro");
+          }
+          else {
+            Serial.println("(Ambiente Claro)");
+            lcd.println("Claro");
+          }
+          // Suelo
+          Serial.print("SUELO -> "); Serial.print(porcSuelo); Serial.print("%");
+          if (porcSuelo < 20){ Serial.println("(NECESITA AGUA)");
+            lcd.println("+Agua xfi");
+          }
+          else{
+            Serial.println("(Humedad OK)");
+            lcd.println("Humedad ok");
+          }
+
+          delay(3000);
+          Serial.print("eCO2: ");
+          Serial.print(sgp.eCO2);
+          Serial.print(" ppm\t");
+
+          lcd.print();
+          Serial.print("TVOC: ");
+          Serial.print(sgp.TVOC);
+          Serial.println(" ppb");
+
+          delay(2000);
+        }       
+      </pre>
+  </div>
+
+  <div class="code-container" id="arduino-code-wrapper">
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">ARDUINO C++</span>
+        <button class="code-copy-btn" onclick="copyCode()">Copiar</button>
+      </div>
+     
+<span class="cmt">// ──────────────────────────────────────────────────</span>
+
+<span class="kw">#include</span> <span class="str">&lt;Wire.h&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;SPI.h&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;SD.h&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;BH1750.h&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;Adafruit_SSD1306.h&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;RTClib.h&gt;</span>
+
+<span class="cmt">// ── Pines ───────────────────────────────────────────</span>
+<span class="kw">const</span> <span class="type">int</span> PIN_SUELO  = A0;
+<span class="kw">const</span> <span class="type">int</span> PIN_CO2    = A1;
+<span class="kw">const</span> <span class="type">int</span> PIN_LED    = 13;
+<span class="kw">const</span> <span class="type">int</span> PIN_SD_CS  = 10;
+
+<span class="cmt">// ── Objetos ─────────────────────────────────────────</span>
+<span class="type">BH1750</span>             lightMeter;
+<span class="type">Adafruit_SSD1306</span>   oled(<span class="num">128</span>, <span class="num">64</span>, &amp;Wire, -<span class="num">1</span>);
+<span class="type">RTC_DS1307</span>         rtc;
+<span class="type">File</span>               logFile;
+
+<span class="cmt">// ── Variables globales ───────────────────────────────</span>
+<span class="type">float</span>  soilPct   = <span class="num">0</span>;
+<span class="type">float</span>  luxVal    = <span class="num">0</span>;
+<span class="type">float</span>  co2Ppm    = <span class="num">0</span>;
+<span class="type">uint8_t</span> oledPage = <span class="num">0</span>;
+<span class="type">unsigned long</span> lastOledSwitch = <span class="num">0</span>;
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  Serial.<span class="fn">begin</span>(<span class="num">9600</span>);
+  Wire.<span class="fn">begin</span>();
+  pinMode(PIN_LED, OUTPUT);
+  lightMeter.<span class="fn">begin</span>();
+  oled.<span class="fn">begin</span>(SSD1306_SWITCHCAPVCC, <span class="num">0x3C</span>);
+  oled.<span class="fn">clearDisplay</span>();
+  oled.<span class="fn">setTextColor</span>(WHITE);
+  rtc.<span class="fn">begin</span>();
+  <span class="kw">if</span> (!rtc.<span class="fn">isrunning</span>()) rtc.<span class="fn">adjust(DateTime(__DATE__, __TIME__));</span>
+
+  <span class="kw">if</span> (!SD.<span class="fn">begin</span>(PIN_SD_CS)) {
+    Serial.<span class="fn">println</span>(<span class="str">"ERROR: SD no detectada"</span>);
+    <span class="kw">while</span> (<span class="num">1</span>);
+  }
+  logFile = SD.<span class="fn">open</span>(<span class="str">"data.csv"</span>, FILE_WRITE);
+  <span class="kw">if</span> (logFile) {
+    logFile.<span class="fn">println</span>(<span class="str">"timestamp,soil_pct,lux,co2_ppm"</span>);
+    logFile.<span class="fn">close</span>();
+  }
+  Serial.<span class="fn">println</span>(<span class="str">"EcoStation lista ✓"</span>);
+}
+
+<span class="kw">void</span> <span class="fn">readSensors</span>() {
+  <span class="type">int</span> raw = <span class="num">0</span>;
+  <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; <span class="num">5</span>; i++) raw += analogRead(PIN_SUELO);
+  soilPct = <span class="fn">map</span>(raw / <span class="num">5</span>, <span class="num">1023</span>, <span class="num">0</span>, <span class="num">0</span>, <span class="num">100</span>);
+  luxVal = lightMeter.<span class="fn">readLightLevel</span>();
+  <span class="type">float</span> v  = analogRead(PIN_CO2) * (<span class="num">5.0</span> / <span class="num">1023.0</span>);
+  <span class="type">float</span> rs = ((<span class="num">5.0</span> - v) / v) * <span class="num">10.0</span>;
+  co2Ppm   = <span class="num">116.6020682</span> * <span class="fn">pow</span>(rs / <span class="num">76.63</span>, -<span class="num">2.777</span>);
+}
+
+<span class="kw">void</span> <span class="fn">saveToSD</span>() {
+  DateTime now = rtc.<span class="fn">now</span>();
+  logFile = SD.<span class="fn">open</span>(<span class="str">"data.csv"</span>, FILE_WRITE);
+  <span class="kw">if</span> (logFile) {
+    logFile.<span class="fn">print</span>(now.<span class="fn">timestamp</span>(DateTime::TIMESTAMP_FULL));
+    logFile.<span class="fn">print</span>(<span class="str">","</span>); logFile.<span class="fn">print</span>(soilPct, <span class="num">1</span>);
+    logFile.<span class="fn">print</span>(<span class="str">","</span>); logFile.<span class="fn">print</span>(luxVal,  <span class="num">1</span>);
+    logFile.<span class="fn">print</span>(<span class="str">","</span>); logFile.<span class="fn">println</span>(co2Ppm, <span class="num">1</span>);
+    logFile.<span class="fn">close</span>();
+  }
+}
+
+<span class="kw">void</span> <span class="fn">updateOLED</span>() {
+  <span class="kw">if</span> (millis() - lastOledSwitch &gt; <span class="num">3000</span>) {
+    oledPage = (oledPage + <span class="num">1</span>) % <span class="num">3</span>;
+    lastOledSwitch = <span class="fn">millis</span>();
+  }
+  oled.<span class="fn">clearDisplay</span>();
+  oled.<span class="fn">setTextSize</span>(<span class="num">1</span>);
+  oled.<span class="fn">setCursor</span>(<span class="num">0</span>, <span class="num">0</span>);
+  <span class="kw">if</span>      (oledPage == <span class="num">0</span>) { oled.<span class="fn">print</span>(<span class="str">"SUELO: "</span>); oled.<span class="fn">print</span>(soilPct); oled.<span class="fn">println</span>(<span class="str">"%"</span>); }
+  <span class="kw">else if</span> (oledPage == <span class="num">1</span>) { oled.<span class="fn">print</span>(<span class="str">"LUZ:   "</span>); oled.<span class="fn">print</span>(luxVal);  oled.<span class="fn">println</span>(<span class="str">" lx"</span>); }
+  <span class="kw">else</span>                    { oled.<span class="fn">print</span>(<span class="str">"CO2:   "</span>); oled.<span class="fn">print</span>(co2Ppm);  oled.<span class="fn">println</span>(<span class="str">" ppm"</span>); }
+  oled.<span class="fn">display</span>();
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="fn">readSensors</span>();
+  <span class="fn">updateOLED</span>();
+  <span class="fn">saveToSD</span>();
+  digitalWrite(PIN_LED, co2Ppm &gt; <span class="num">1000</span> ? HIGH : LOW);
+  Serial.<span class="fn">print</span>(<span class="str">"Suelo: "</span>); Serial.<span class="fn">print</span>(soilPct);
+  Serial.<span class="fn">print</span>(<span class="str">"% | Lux: "</span>); Serial.<span class="fn">print</span>(luxVal);
+  Serial.<span class="fn">print</span>(<span class="str">" | CO2: "</span>); Serial.<span class="fn">print</span>(co2Ppm); Serial.<span class="fn">println</span>(<span class="str">" ppm"</span>);
+  delay(<span class="num">1000</span>);
+}</pre>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<section class="section" id="materiales">
+  <div class="section-tag">// lista de materiales</div>
+  <h2>BOM — Bill of Materials</h2>
+  <p class="section-lead">Todo lo necesario para montar la estación. Coste estimado total: ~25–35 €.</p>
+
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow: 0 2px 8px rgba(40,60,40,0.02);">
+    <table class="materials-table">
+      <thead>
+        <tr>
+          <th>Componente</th>
+          <th>Descripción</th>
+          <th>Cantidad</th>
+          <th>Coste aprox.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Arduino Mega 2560</td><td>Microcontrolador principal (también válido Uno)</td><td><span class="qty-badge">×1</span></td><td>~10 €</td></tr>
+        <tr><td>YL-69 + YL-38</td><td>Sensor de humedad de suelo resistivo</td><td><span class="qty-badge">×1</span></td><td>~1 €</td></tr>
+        <tr><td>BH1750</td><td>Sensor digital de luz ambiente I²C</td><td><span class="qty-badge">×1</span></td><td>~2 €</td></tr>
+        <tr><td>MQ-135</td><td>Sensor de calidad de aire / CO₂</td><td><span class="qty-badge">×1</span></td><td>~3 €</td></tr>
+        <tr><td>SSD1306 OLED</td><td>Pantalla 128×64 I²C 0.96"</td><td><span class="qty-badge">×1</span></td><td>~4 €</td></tr>
+        <tr><td>Módulo SD</td><td>Lector microSD SPI 3.3/5 V</td><td><span class="qty-badge">×1</span></td><td>~2 €</td></tr>
+        <tr><td>DS1307 RTC</td><td>Módulo reloj en tiempo real + batería CR2032</td><td><span class="qty-badge">×1</span></td><td>~2 €</td></tr>
+        <tr><td>LED rojo 5 mm</td><td>Indicador de alerta CO₂ elevado</td><td><span class="qty-badge">×1</span></td><td>&lt;0.10 €</td></tr>
+        <tr><td>Resistencia 220 Ω</td><td>Para LED de alerta</td><td><span class="qty-badge">×1</span></td><td>&lt;0.05 €</td></tr>
+        <tr><td>MicroSD 8 GB</td><td>Almacenamiento de datos CSV</td><td><span class="qty-badge">×1</span></td><td>~4 €</td></tr>
+        <tr><td>Protoboard + cables</td><td>Montaje sin soldadura</td><td><span class="qty-badge">×1</span></td><td>~3 €</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  &copy; 2026 EcoStation Project · Arduino · MIT License · Construido con 🌱 y tecnología ecológica
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+function toggleCodeSection() {
+  const container = document.getElementById('arduino-code-wrapper');
+  const triggerBtn = document.getElementById('toggle-trigger-btn');
+  
+  container.classList.toggle('open');
+  
+  if (container.classList.contains('open')) {
+    triggerBtn.textContent = 'Ocultar código fuente ↑';
+    setTimeout(() => {
+      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 120);
+  } else {
+    triggerBtn.textContent = 'Desplegar código fuente ↓';
+  }
+}
+
+// Simulación de datos gráficos
+const MAX_PTS = 30;
+const labels = [];
+const soilData = [];
+const luxData  = [];
+const co2Data  = [];
+
+for (let i = 0; i < MAX_PTS; i++) {
+  labels.push('');
+  soilData.push(null);
+  luxData.push(null);
+  co2Data.push(null);
+}
+
+const ctx = document.getElementById('sensorChart').getContext('2d');
+const chart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels,
+    datasets: [
+      { label: 'Suelo %', data: soilData, borderColor: '#8a5700', backgroundColor: 'rgba(138,87,0,0.03)', borderWidth: 2, pointRadius: 0, tension: 0.4 },
+      { label: 'Luz ×10 lx', data: luxData, borderColor: '#9e790a', backgroundColor: 'rgba(194,149,12,0.03)', borderWidth: 2, pointRadius: 0, tension: 0.4 },
+      { label: 'CO₂ ÷10 ppm', data: co2Data, borderColor: '#b81422', backgroundColor: 'rgba(184,20,34,0.03)', borderWidth: 2, pointRadius: 0, tension: 0.4 },
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { ticks: { display: false }, grid: { color: 'rgba(0,0,0,0.04)', lineWidth: 0.5 }, border: { color: 'transparent' } },
+      y: { ticks: { color: '#4a634a', font: { family: 'Space Mono', size: 10 }, maxTicksLimit: 5 }, grid: { color: 'rgba(0,0,0,0.04)', lineWidth: 0.5 }, border: { color: 'transparent' }, min: 0, max: 120 }
+    }
+  }
+});
+
+let tSoil = 55, tLux = 45, tCo2 = 420;
+function randWalk(v, center, step, min, max) {
+  v += (Math.random() - 0.5) * step + (center - v) * 0.04;
+  return Math.max(min, Math.min(max, v));
+}
+
+function tick() {
+  tSoil = randWalk(tSoil, 60, 4,  0, 100);
+  tLux  = randWalk(tLux,  50, 8,  0, 100);
+  tCo2  = randWalk(tCo2, 450, 30, 350, 1200);
+
+  document.getElementById('val-soil').textContent = Math.round(tSoil);
+  document.getElementById('val-lux').textContent  = Math.round(tLux * 12);
+  document.getElementById('val-co2').textContent  = Math.round(tCo2);
+
+  soilData.push(Math.round(tSoil));
+  luxData.push(+(tLux * 12 / 10).toFixed(1));
+  co2Data.push(+(tCo2 / 10).toFixed(1));
+  labels.push('');
+
+  if (soilData.length > MAX_PTS) { soilData.shift(); luxData.shift(); co2Data.shift(); labels.shift(); }
+
+  chart.update();
+}
+
+tick();
+setInterval(tick, 1000);
+
+function copyCode() {
+  const text = document.getElementById('code-content').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.code-copy-btn');
+    btn.textContent = '¡Copiado!';
+    setTimeout(() => { btn.textContent = 'Copiar'; }, 1500);
+  });
+}
+</script>
+</body>
+</html>
