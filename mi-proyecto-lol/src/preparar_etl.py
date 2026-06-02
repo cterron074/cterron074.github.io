@@ -2,12 +2,14 @@ import os
 import pandas as pd
 
 def adaptar_fichero_csv():
-    # Definimos la ruta exacta que usas
-    ruta_directorio = r"C:\etl\data"
-    archivo_entrada = os.path.join("src", "data.csv")
+    # 1. Obtenemos la ruta exacta de la carpeta donde está guardado ESTE script
+    directorio_actual = os.path.dirname(os.path.abspath(__file__))
+    
+    # 2. Construimos la ruta al archivo data.csv asumiendo que está en la misma carpeta
+    archivo_entrada = os.path.join(directorio_actual, "data.csv")
     
     if not os.path.exists(archivo_entrada):
-        print(f"[Error] No se encontró el archivo en la ruta: {archivo_entrada}")
+        print(f"[Error] No se encontró el archivo en la ruta absoluta: {archivo_entrada}")
         return
 
     print(f"-> Cargando {archivo_entrada} en memoria...")
