@@ -284,28 +284,34 @@
     </div>
 
     <script>
-       // Realizamos la llamada a tu API local
-        fetch('http://localhost:8085/api/general-stats')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Error en la respuesta del servidor");
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log("Datos recibidos de Aiven:", data);
-                
-                // Mapeo directo de TUS variables exactas del JSON
-                document.getElementById('total-partidas').innerText = data.total_games;
-                document.getElementById('total-campeones').innerText = data.total_champions;
-                document.getElementById('duracion-media').innerText = data.avg_duration_minutes + " min";
-            })
-            .catch(error => {
-                console.error("Error al conectar con Flask:", error);
-                document.getElementById('total-partidas').innerText = "Error";
-                document.getElementById('total-campeones').innerText = "Offline";
-                document.getElementById('duracion-media').innerText = "Offline";
-            });
+      <script>
+    // 1. Define la URL base de tu API en Render
+    // Cambia 'tu-proyecto.onrender.com' por el dominio real que te dio Render
+    const API_BASE_URL = 'https://tu-proyecto.onrender.com';
+
+    // 2. Realizamos la llamada a la API
+    fetch(`${API_BASE_URL}/api/general-stats`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("No se pudieron obtener los datos");
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Datos recibidos de Aiven:", data);
+            
+            // Asignación de datos al DOM
+            document.getElementById('total-partidas').innerText = data.total_games.toLocaleString();
+            document.getElementById('total-campeones').innerText = data.total_champions;
+            document.getElementById('duracion-media').innerText = data.avg_duration_minutes + " min";
+        })
+        .catch(error => {
+            console.error("Error al conectar con Render:", error);
+            document.getElementById('total-partidas').innerText = "N/A";
+            document.getElementById('total-campeones').innerText = "N/A";
+            document.getElementById('duracion-media').innerText = "Error";
+        });
+</script>
     </script>
 
 </body>
