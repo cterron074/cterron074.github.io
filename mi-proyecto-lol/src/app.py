@@ -9,7 +9,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 app = Flask(__name__)
-# CORS permite que tu HTML/JS (Frontend) consulte esta API sin bloqueos de seguridad
+# CORS permite que tu frontend consulte esta API
 CORS(app)
 
 # Configuración de la conexión a la base de datos MySQL
@@ -23,8 +23,9 @@ CONNECTION_STRING = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT
 engine = create_engine(CONNECTION_STRING)
 
 # ----------------------------------------------------
-# ENDPOINT 1: RESUMEN GENERAL (KPIs para tarjetas estáticas)
+# ENDPOINTS
 # ----------------------------------------------------
+
 @app.route('/api/general-stats', methods=['GET'])
 def get_general_stats():
     query = text("""
@@ -33,7 +34,6 @@ def get_general_stats():
             (SELECT COUNT(*) FROM Champions) as total_champions,
             (SELECT ROUND(AVG(duration) / 60, 1) FROM Games) as avg_duration_minutes
     """)
-    
     try:
         with engine.connect() as conn:
             result = conn.execute(query).mappings().first()
@@ -41,9 +41,6 @@ def get_general_stats():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# ----------------------------------------------------
-# ENDPOINT 2: TOP CAMPEONES MÁS JUGADOS (Para gráficos de barras/torta)
-# ----------------------------------------------------
 @app.route('/api/top-champions', methods=['GET'])
 def get_top_champions():
     query = text("""
@@ -60,7 +57,6 @@ def get_top_champions():
         ORDER BY games_played DESC
         LIMIT 6
     """)
-    
     try:
         with engine.connect() as conn:
             result = conn.execute(query).mappings().all()
@@ -68,9 +64,6 @@ def get_top_champions():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# ----------------------------------------------------
-# ENDPOINT 3: RENDIMIENTO POR ROL/POSICIÓN (Para gráficos de radar)
-# ----------------------------------------------------
 @app.route('/api/stats-by-role', methods=['GET'])
 def get_stats_by_role():
     query = text("""
@@ -86,7 +79,6 @@ def get_stats_by_role():
         GROUP BY position
         ORDER BY games_played DESC
     """)
-    
     try:
         with engine.connect() as conn:
             result = conn.execute(query).mappings().all()
@@ -94,9 +86,6 @@ def get_stats_by_role():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# ----------------------------------------------------
-# ENDPOINT 4: HISTORIAL DE PARTIDAS RECIENTES (Para tablas en el portfolio)
-# ----------------------------------------------------
 @app.route('/api/recent-matches', methods=['GET'])
 def get_recent_matches():
     query = text("""
@@ -117,7 +106,6 @@ def get_recent_matches():
         ORDER BY g.start_utc DESC
         LIMIT 10
     """)
-    
     try:
         with engine.connect() as conn:
             result = conn.execute(query).mappings().all()
@@ -126,7 +114,6 @@ def get_recent_matches():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    # Ejecuta el servidor local en modo desarrollo en el puerto 8085
-    app.run(host='0.0.0.0', port=8085, debug=True, use_reloader=False)
-
-   # @app.route('http://0.0.0.0:8085/api/stats', methods=['GET'])
+    # Puerto dinámico para Render
+    port = int(os.environ.get("PORT", 8085))
+    app.run(host='0.0.0.0', port=port)
