@@ -15,7 +15,7 @@ DB_NAME = "defaultdb"
 
 # Corrección de Ruta: Detecta automáticamente la carpeta 'src' en Render o Local
 DIRECTORIO_ACTUAL = os.path.dirname(os.path.abspath(__file__))
-ARCHIVO_ORIGEN = "data.csv"
+ARCHIVO_ORIGEN = "data_limpio.csv"  # <-- Asegúrate de que use este nombre
 
 def get_db_engine():
     connection_string = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
