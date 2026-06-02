@@ -29,7 +29,11 @@ def run_etl():
         print(f"[Error] No se encontró el archivo '{ARCHIVO_ORIGEN}' en la ruta: {path_origen}")
         sys.exit(1) # <-- Frenamos con error real para que Render nos avise
 
-    print(f"Leyendo origen de datos desde: {path_origen}...")
+   print(f"Leyendo origen de datos desde: {path_origen}...")
+    
+    # 🔍 LÍNEA DE DIAGNÓSTICO (Añade esto):
+    print(f"⚠️ [DEBUG RENDER] El tamaño real de 'data_limpio.csv' es: {os.path.getsize(path_origen)} bytes")
+    
     df_raw = pd.read_csv(path_origen)
     
     # Tratamiento seguro de fechas
