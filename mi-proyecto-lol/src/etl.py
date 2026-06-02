@@ -1,24 +1,28 @@
 import os
 import pandas as pd
+from sqlalchemy import create_engine
 
-def adaptar_fichero_csv():
-    # Obtiene el directorio donde está este archivo (src)
+def run_etl():
+    # 1. Rutas
     script_dir = os.path.dirname(os.path.abspath(__file__))
+    path_origen = os.path.join(script_dir, "data_limpio.csv")
     
-    # Busca 'data.csv' directamente en 'src'
-    archivo_entrada = os.path.join(script_dir, "data.csv")
-    archivo_salida = os.path.join(script_dir, "data_limpio.csv")
+    # 2. Configuración de conexión (SQLAlchemy)
+    # ¡Asegúrate de que estas credenciales sean las correctas de tu panel Aiven!
+    db_url = "mysql+pymysql://avnadmin:AVNS_pu8DuuDDpatGY7euatj@mysql-mi-proyecto-lol.b.aivencloud.com:15368/defaultdb"
+    engine = create_engine(db_url)
     
-    print(f"Buscando archivo en: {archivo_entrada}")
+    # 3. Lectura del archivo limpio
+    df = pd.read_csv(path_origen)
     
-    if not os.path.exists(archivo_entrada):
-        print(f"Error: No se encuentra el archivo en {archivo_entrada}")
-        return
-
-    df = pd.read_csv(archivo_entrada)
-    df = df.dropna(subset=["game_id", "participant_id"])
-    df.to_csv(archivo_salida, index=False)
-    print("Archivo 'data_limpio.csv' generado correctamente.")
+    # 4. Inyección a la base de datos
+    print(f"Cargando {len(df)} filas en Aiven...")
+    try:
+        # if_exists='append' es clave para no borrar lo que ya tenías
+        df.to_sql("Games", con=engine, if_exists="append", index=False)
+        print("¡Carga exitosa a Aiven!")
+    except Exception as e:
+        print(f"Error al conectar con Aiven: {e}")
 
 if __name__ == "__main__":
-    adaptar_fichero_csv()
+    run_etl()
