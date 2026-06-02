@@ -4,7 +4,7 @@ import pandas as pd
 def adaptar_fichero_csv():
     # Definimos la ruta exacta que usas
     ruta_directorio = r"C:\etl\data"
-    archivo_entrada = os.path.join(ruta_directorio, "data.csv")
+    archivo_entrada = os.path.join("src", "data.csv")
     
     if not os.path.exists(archivo_entrada):
         print(f"[Error] No se encontró el archivo en la ruta: {archivo_entrada}")
