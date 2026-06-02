@@ -7,6 +7,12 @@ def adaptar_fichero_csv():
     
     # 2. Construimos la ruta al archivo data.csv asumiendo que está en la misma carpeta
     archivo_entrada = os.path.join(directorio_actual, "data.csv")
+    print(f"-> Cargando {archivo_entrada} en memoria...")
+    
+    # 🔍 LÍNEA DE DIAGNÓSTICO (Añade esto):
+    print(f"⚠️ [DEBUG RENDER] El tamaño real de 'data.csv' es: {os.path.getsize(archivo_entrada)} bytes")
+    
+    df = pd.read_csv(archivo_entrada)
     # NUEVO: Archivo de salida intermedio para evitar borrar el origen
     archivo_salida = os.path.join(directorio_actual, "data_limpio.csv")
     
