@@ -15,7 +15,7 @@ DB_NAME = "defaultdb"
 
 # Corrección de Ruta: Detecta automáticamente la carpeta 'src' en Render o Local
 DIRECTORIO_ACTUAL = os.path.dirname(os.path.abspath(__file__))
-ARCHIVO_ORIGEN = "data_limpio.csv"  # <-- Asegúrate de que use este nombre
+ARCHIVO_ORIGEN = "data_limpio.csv"  # <-- Usa el archivo limpio generado por preparar_etl.py
 
 def get_db_engine():
     connection_string = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
@@ -29,9 +29,10 @@ def run_etl():
         print(f"[Error] No se encontró el archivo '{ARCHIVO_ORIGEN}' en la ruta: {path_origen}")
         sys.exit(1) # <-- Frenamos con error real para que Render nos avise
 
-   print(f"Leyendo origen de datos desde: {path_origen}...")
+    # Corregido: Identación del print arreglada
+    print(f"Leyendo origen de datos desde: {path_origen}...")
     
-    # 🔍 LÍNEA DE DIAGNÓSTICO (Añade esto):
+    # LÍNEA DE DIAGNÓSTICO:
     print(f"⚠️ [DEBUG RENDER] El tamaño real de 'data_limpio.csv' es: {os.path.getsize(path_origen)} bytes")
     
     df_raw = pd.read_csv(path_origen)
@@ -60,6 +61,9 @@ def run_etl():
     print("Cargando entidad 'Games'...")
     cols_games = ["game_id", "start_utc", "duration", "queue", "platform_id", "map_id", "game_mode", "game_version"]
     df_games = df_raw[cols_games].drop_duplicates(subset=["game_id"])
+    
+    # Reemplazo seguro de nulos antes de insertar en la base de datos cloud
+    df_games = df_games.replace({np.nan: None})
     df_games.to_sql("Games", con=engine, if_exists="append", index=False)
 
     # Recuperar el mapa de IDs autoincrementales generados por la base de datos
@@ -91,6 +95,7 @@ def run_etl():
     df_part = pd.merge(df_raw[cols_presentes + ["team_name"]], df_db_teams, on="team_name", how="inner")
     df_part = df_part.drop_duplicates(subset=["game_id", "participant_id"])[cols_presentes + ["team_id"]]
     
+    # Tratamiento robusto de vacíos para evitar que Aiven proteste con los tipos de datos
     df_part = df_part.replace({np.nan: None, 'None': None, 'nan': None})
     df_part.to_sql("Participants", con=engine, if_exists="append", index=False)
 
