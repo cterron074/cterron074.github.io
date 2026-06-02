@@ -7,6 +7,8 @@ def adaptar_fichero_csv():
     
     # 2. Construimos la ruta al archivo data.csv asumiendo que está en la misma carpeta
     archivo_entrada = os.path.join(directorio_actual, "data.csv")
+    # NUEVO: Archivo de salida intermedio para evitar borrar el origen
+    archivo_salida = os.path.join(directorio_actual, "data_limpio.csv")
     
     if not os.path.exists(archivo_entrada):
         print(f"[Error] No se encontró el archivo en la ruta absoluta: {archivo_entrada}")
@@ -51,9 +53,10 @@ def adaptar_fichero_csv():
         if col in df.columns:
             df[col] = df[col].astype(str).replace({'N/A': None, 'NaN': None, 'nan': None, 'None': None})
             
-    print(f"-> Guardando archivo modificado en: {archivo_entrada}")
-    df.to_csv(archivo_entrada, index=False)
-    print(f"¡Proceso completado! Se procesaron {original_rows} líneas y se actualizó con éxito el fichero.")
+    # CORRECCIÓN AQUÍ: Guardamos en archivo_salida (data_limpio.csv)
+    print(f"-> Guardando archivo modificado en: {archivo_salida}")
+    df.to_csv(archivo_salida, index=False)
+    print(f"¡Proceso completado! Se procesaron {original_rows} líneas y se generó con éxito el fichero limpio.")
 
 if __name__ == "__main__":
     adaptar_fichero_csv()
