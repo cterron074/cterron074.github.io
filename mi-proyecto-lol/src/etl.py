@@ -3,8 +3,15 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 def run_etl():
-    # 1. Rutas
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+   script_dir = os.path.dirname(os.path.abspath(__file__))
+    # Ruta al certificado que acabas de subir a GitHub
+    cert_path = os.path.join(os.path.dirname(script_dir), "ca.pem")
+    
+    # URL de conexión incluyendo el parámetro del certificado
+    # Sustituye con tus credenciales
+    db_url = f"mysql+pymysql://avnadmin:TU_PASSWORD@HOST:PUERTO/defaultdb?ssl_ca={cert_path}"
+    
+    engine = create_engine(db_url, connect_args={"ssl": {"ca": cert_path}})
     path_origen = os.path.join(script_dir, "data_limpio.csv")
     
     # 2. Configuración de conexión (SQLAlchemy)
