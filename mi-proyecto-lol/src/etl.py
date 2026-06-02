@@ -1,4 +1,5 @@
 import os
+import sys  # <-- Necesario para reportar errores reales a Render
 import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine
@@ -6,13 +7,14 @@ from sqlalchemy import create_engine
 # ==========================================
 # CONFIGURACIÓN DE CONEXIÓN Y RUTA
 # ==========================================
-DB_USER = "root"
-DB_PASSWORD = "tu_password"  # <-- Cambia esto por tu contraseña de MySQL
-DB_HOST = "localhost"
-DB_PORT = "3306"
-DB_NAME = "lol_ranked_s15"
+DB_USER = "avnadmin"
+DB_PASSWORD = "AVNS_pu8DuuDDpatGY7euatj"  
+DB_HOST = "mysql-mi-proyecto-lol.b.aivencloud.com"
+DB_PORT = "15368"
+DB_NAME = "defaultdb"
 
-RUTA_DATA = r"C:\etl\data"
+# Corrección de Ruta: Detecta automáticamente la carpeta 'src' en Render o Local
+DIRECTORIO_ACTUAL = os.path.dirname(os.path.abspath(__file__))
 ARCHIVO_ORIGEN = "data.csv"
 
 def get_db_engine():
@@ -21,22 +23,20 @@ def get_db_engine():
 
 def run_etl():
     engine = get_db_engine()
-    path_origen = os.path.join(RUTA_DATA, ARCHIVO_ORIGEN)
+    path_origen = os.path.join(DIRECTORIO_ACTUAL, ARCHIVO_ORIGEN)
     
     if not os.path.exists(path_origen):
         print(f"[Error] No se encontró el archivo '{ARCHIVO_ORIGEN}' en la ruta: {path_origen}")
-        return
+        sys.exit(1) # <-- Frenamos con error real para que Render nos avise
 
     print(f"Leyendo origen de datos desde: {path_origen}...")
     df_raw = pd.read_csv(path_origen)
     
     # Tratamiento seguro de fechas
     if "mastery_lastPlayTime" in df_raw.columns:
-        # Convertir a numérico, tratar el 0 y valores faltantes de manera segura antes de pasar a datetime
         df_raw["mastery_lastPlayTime"] = pd.to_numeric(df_raw["mastery_lastPlayTime"], errors="coerce")
         df_raw["mastery_lastPlayTime"] = df_raw["mastery_lastPlayTime"].replace(0, np.nan)
         df_raw["mastery_lastPlayTime"] = pd.to_datetime(df_raw["mastery_lastPlayTime"], unit="ms", errors="coerce")
-        # Cambiar NaT por None para compatibilidad nativa con el driver de MySQL (NULL)
         df_raw["mastery_lastPlayTime"] = df_raw["mastery_lastPlayTime"].where(df_raw["mastery_lastPlayTime"].notnull(), None)
 
     if "start_utc" in df_raw.columns:
@@ -87,9 +87,7 @@ def run_etl():
     df_part = pd.merge(df_raw[cols_presentes + ["team_name"]], df_db_teams, on="team_name", how="inner")
     df_part = df_part.drop_duplicates(subset=["game_id", "participant_id"])[cols_presentes + ["team_id"]]
     
-    # Asegurar el reemplazo final de tipos float extraños por None (NULL en la BD)
     df_part = df_part.replace({np.nan: None, 'None': None, 'nan': None})
-    
     df_part.to_sql("Participants", con=engine, if_exists="append", index=False)
 
     # 6. TABLA: TeamStats
@@ -106,3 +104,4 @@ if __name__ == "__main__":
         print("=== PROCESO FINALIZADO CON ÉXITO SIN ERRORES ===")
     except Exception as e:
         print(f"\n[ERROR CRÍTICO DEL ETL]: {e}")
+        sys.exit(1) # <-- Forzamos la salida con error para romper el despliegue si la BD falla
