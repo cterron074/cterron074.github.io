@@ -8,10 +8,9 @@ def run_etl():
     cert_path = os.path.join(os.path.dirname(script_dir), "ca.pem")
     
     # URL de conexión incluyendo el parámetro del certificado
-    # Sustituye con tus credenciales
-    db_url = f"mysql+pymysql://avnadmin:TU_PASSWORD@HOST:PUERTO/defaultdb?ssl_ca={cert_path}"
     
-    engine = create_engine(db_url, connect_args={"ssl": {"ca": cert_path}})
+   db_url = "mysql+pymysql://avnadmin:AVNS_pu8DuuDDpatGY7euatj@mysql-mi-proyecto-lol.b.aivencloud.com:15368/defaultdb"
+      engine = create_engine(db_url, connect_args={'ssl': None}) # Desactiva el SSL temporalmente
     path_origen = os.path.join(script_dir, "data_limpio.csv")
     
     # 2. Configuración de conexión (SQLAlchemy)
