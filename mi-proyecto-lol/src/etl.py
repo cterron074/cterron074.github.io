@@ -21,11 +21,12 @@ def run_etl():
 
     df = pd.read_csv(path_origen)
     
+
     # 4. Inyección a la base de datos
     print(f"Cargando {len(df)} filas en Aiven...")
     try:
-        # Usamos append para añadir datos
-        df.to_sql("Games", con=engine, if_exists="append", index=False)
+        # CAMBIA 'append' por 'replace' aquí:
+        df.to_sql("Games", con=engine, if_exists="replace", index=False)
         print("¡Carga exitosa a Aiven!")
     except Exception as e:
         print(f"Error al conectar o insertar en Aiven: {e}")
