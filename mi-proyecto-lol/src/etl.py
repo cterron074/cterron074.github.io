@@ -25,8 +25,12 @@ def run_etl():
     # 4. Inyección a la base de datos
     print(f"Cargando {len(df)} filas en Aiven...")
     try:
-        # CAMBIA 'append' por 'replace' aquí:
-        df.to_sql("Games", con=engine, if_exists="replace", index=False)
+        with engine.connect() as conn:
+    conn.execute("SET FOREIGN_KEY_CHECKS = 0")
+    conn.execute("TRUNCATE TABLE Games") # TRUNCATE vacía la tabla rápidamente
+    conn.execute("SET FOREIGN_KEY_CHECKS = 1")
+
+df.to_sql("Games", con=engine, if_exists="append", index=False)
         print("¡Carga exitosa a Aiven!")
     except Exception as e:
         print(f"Error al conectar o insertar en Aiven: {e}")
