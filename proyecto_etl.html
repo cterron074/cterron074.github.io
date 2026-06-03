@@ -2,173 +2,135 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Estadísticas T15 - Proyecto ETL</title>
-   <style>
+    <title>Dashboard T15 - Runic Analytics</title>
+    <style>
         :root {
-    /* Paleta ajustada para máximo contraste */
-    --card-bg: rgba(10, 14, 19, 0.85);
-    --accent-blue: #00e1ff;
-    --accent-pink: #ff007f;
-    
-    /* Dorado eléctrico (más saturado para contrastar con azul) */
-    --gold: #ffcc00; 
-    --gold-glow: #ff9900;
-    --text-main: #ffffff; /* Blanco para texto general para mejor lectura */
-}
-
-
-
+            --gold: #c5a059;
+            --blue-runic: #00e1ff;
+            --bg-dark: #05070a;
+        }
 
         body {
-            font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #0a0e13;
-            color: var(--text-main);
-            margin: 0;
-            padding: 40px 20px;
-            min-height: 100vh;
-            overflow-x: hidden;
-            /* Fondo de fuego azul */
-            background: linear-gradient(0deg, #050a14, #001f3f, #00e1ff33);
-            background-size: 100% 300%;
-            animation: fireAnim 10s ease infinite;
+            margin: 0; padding: 40px;
+            background: var(--bg-dark);
+            background-image: radial-gradient(circle at center, #1b263b 0%, #05070a 80%);
+            color: #d1d1d1;
+            font-family: 'Segoe UI', sans-serif;
         }
 
-        @keyframes fireAnim {
-            0% { background-position: 0% 100%; }
-            50% { background-position: 0% 0%; }
-            100% { background-position: 0% 100%; }
-        }
-
-        /* Contenedor principal */
-        .container { max-width: 1100px; margin: 0 auto; z-index: 1; position: relative; }
-
-        /* Tarjetas */
-        .card {
-            background: var(--card-bg);
-            border: 1px solid rgba(0, 225, 255, 0.3);
+        .dashboard-container {
+            max-width: 1000px; margin: auto;
+            border: 2px solid #3e2723;
             padding: 30px;
-            margin-bottom: 25px;
-            backdrop-filter: blur(8px);
+            background: rgba(10, 10, 10, 0.9);
+            box-shadow: 0 0 50px rgba(0,0,0,0.9);
         }
 
-        h2 { color: var(--accent-blue); text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid var(--accent-blue); }
+        /* Cabecera Intro */
+        .intro-section { border-bottom: 2px solid var(--gold); padding-bottom: 20px; margin-bottom: 30px; }
+        h1 { color: var(--gold); text-transform: uppercase; margin: 0; font-size: 3rem; text-shadow: 2px 2px 5px black; }
+        .intro-text { color: var(--gold); font-style: italic; }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
+        /* Grid de métricas */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-box { background: rgba(0,0,0,0.4); border: 1px solid #2e1d1d; padding: 15px; text-align: center; }
+        .stat-title { display: block; color: var(--gold); font-size: 0.7rem; text-transform: uppercase; }
+        .stat-value { font-size: 1.5rem; color: white; text-shadow: 0 0 8px var(--blue-runic); }
+
+        /* Layout central */
+        .content-layout { display: flex; gap: 30px; align-items: flex-start; }
+        .left-side { flex: 1; }
+        .ivern-container { width: 350px; border: 2px solid #5d4037; padding: 10px; background: #000; text-align: center; }
+        .ivern-img { width: 100%; border: 1px solid var(--gold); }
+
+        /* Listas */
+        .list-box { margin-bottom: 20px; }
+        .list-item { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #222; }
+        .champ-icon { 
+            width: 30px; height: 30px; border-radius: 50%; margin-right: 15px; 
+            border: 1px solid var(--gold); object-fit: cover; background-color: #000;
         }
 
-        .stat-box {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid #1a2f47;
-            padding: 20px;
-            text-align: center;
-        }
-
-        /* Los títulos de las listas también en dorado para coherencia */
-        .stat-title { 
-            display: block; 
-            font-size: 0.75rem; 
-            color: var(--gold); /* Títulos en dorado para destacar */
-            text-transform: uppercase; 
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-        }
-        .stat-value { font-size: 1.6rem; color: white; text-shadow: 0 0 10px var(--accent-blue); }
-
-        ul { list-style: none; padding: 0; text-align: left; display: inline-block; }
-        li { color: white; font-size: 0.8rem; margin: 3px 0; }
-        li b { color: var(--accent-blue); }
-
-        /* Aplicación del contraste en los elementos */
-        .tech-tag {
-            background: rgba(255, 204, 0, 0.1); /* Fondo muy sutil para resaltar el borde */
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            padding: 5px 15px;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            font-weight: bold;
-            /* Resplandor suave para que resalte sobre el fondo oscuro/azul */
-            text-shadow: 0 0 5px var(--gold-glow);
-            box-shadow: 0 0 10px rgba(255, 204, 0, 0.2);
-            display: inline-block;
-        }
+        .tech-tag { border: 1px solid var(--gold); color: var(--gold); padding: 5px 15px; margin-right: 10px; font-weight: bold; }
     </style>
-    
 </head>
 <body>
 
-    <div class="container">
-        <div class="header-banner">
-            <h1>PIPELINE ETL: T15</h1>
-            <p>Infraestructura de datos de alto rendimiento</p>
-        </div>
+<div class="dashboard-container">
+    <header class="intro-section">
+        <h1>PIPELINE ETL: T15</h1>
+        <p class="intro-text">Este proyecto implementa una infraestructura completa de datos diseñada para capturar, procesar y consolidar las estadísticas complejas de la 
+        <strong>Temporada 15</strong>. El objetivo principal es transformar datos brutos provenientes de múltiples fuentes en un repositorio estructurado óptimo para el análisis analítico y de rendimiento.</p></p>
+    </header>
 
-        <div class="card">
-            <h2>Resultados de Análisis</h2>
-            <div class="stats-grid">
-                <div class="stat-box"><span class="stat-title">Partidas</span><span class="stat-value" id="total-partidas">--</span></div>
-                <div class="stat-box"><span class="stat-title">Campeones</span><span class="stat-value" id="total-campeones">--</span></div>
-                <div class="stat-box"><span class="stat-title">Duración Avg</span><span class="stat-value" id="duracion-media">--</span></div>
-                <div class="stat-box"><span class="stat-title">Victorias</span><span class="stat-value" id="victorias-totales">--</span></div>
-                <div class="stat-box">
-                    <span class="stat-title">Top Campeón</span>
-                    <span class="stat-value" id="top-champ">--</span>
-                    <span class="stat-sub" id="top-champ-rate">--</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-title">Top Campeones</span>
-                    <ul id="lista-campeones"></ul>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-title">Win Rate por Rol</span>
-                    <ul id="lista-roles"></ul>
-                </div>
+    <div class="stats-grid">
+        <div class="stat-box"><span class="stat-title">Partidas</span><span class="stat-value" id="total-partidas">--</span></div>
+        <div class="stat-box"><span class="stat-title">Campeones</span><span class="stat-value" id="total-campeones">--</span></div>
+        <div class="stat-box"><span class="stat-title">Duración Avg</span><span class="stat-value" id="duracion-media">--</span></div>
+        <div class="stat-box"><span class="stat-title">Victorias</span><span class="stat-value" id="victorias-totales">--</span></div>
+    </div>
+
+    <div class="content-layout">
+        <div class="left-side">
+            <div class="list-box">
+                <h2 style="font-size:1.2rem; color:var(--gold);">Top Campeones</h2>
+                <div id="lista-campeones"></div>
+            </div>
+            <div class="list-box">
+                <h2 style="font-size:1.2rem; color:var(--gold);">Win Rate por Rol</h2>
+                <div id="lista-roles"></div>
             </div>
         </div>
 
-        <div class="card">
-            <h2>Tecnologías</h2>
-            <span class="tech-tag">Python</span>
-            <span class="tech-tag">Pandas</span>
-            <span class="tech-tag">Flask</span>
-            <span class="tech-tag">MySQL</span>
+        <div class="ivern-container">
+            <img src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ivern_0.jpg" alt="Ivern" class="ivern-img">
+            
+            <h3 style="color:var(--gold); font-size:0.9rem; margin:10px 0 0 0; text-transform:uppercase; letter-spacing:1px;">
+                Campeón clasificado como el más efectivo
+            </h3>
+            <h2 style="font-size:1.4rem; margin:5px 0; color:white;">Ivern</h2>
+            <p id="top-champ-rate" style="color:var(--blue-runic); font-weight:bold; font-size:1.1rem;">-- WR</p>
         </div>
     </div>
 
-    <script>
-        fetch('https://cterron074-github-io.onrender.com/api/stats')
-            .then(res => res.json())
-            .then(data => {
-                // 1. Indicadores simples
-                document.getElementById('total-partidas').innerText = data.general.total_games.toLocaleString();
-                document.getElementById('total-campeones').innerText = data.general.total_champions;
-                document.getElementById('duracion-media').innerText = data.general.avg_duration + " min";
-                document.getElementById('victorias-totales').innerText = data.wins.total_wins.toLocaleString();
-                document.getElementById('top-champ').innerText = data.best_champ.champion_name;
-                document.getElementById('top-champ-rate').innerText = data.best_champ.win_rate + "% WR";
+    <div style="margin-top:30px;">
+        <span class="tech-tag">Python</span><span class="tech-tag">Pandas</span><span class="tech-tag">Flask</span><span class="tech-tag">MySQL</span>
+    </div>
+</div>
 
-                // 2. Poblar Array Campeones
-                const listaChamps = document.getElementById('lista-campeones');
-                data.top_champions.forEach(c => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `${c.champion_name}: <b>${c.games_played}</b>`;
-                    listaChamps.appendChild(li);
-                });
+<script>
+    fetch('https://cterron074-github-io.onrender.com/api/stats')
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('total-partidas').innerText = data.general.total_games.toLocaleString();
+            document.getElementById('total-campeones').innerText = data.general.total_champions;
+            document.getElementById('duracion-media').innerText = data.general.avg_duration + " min";
+            document.getElementById('victorias-totales').innerText = data.wins.total_wins.toLocaleString();
+            document.getElementById('top-champ-rate').innerText = data.best_champ.win_rate + "% WR";
 
-                // 3. Poblar Array Roles
-                const listaRoles = document.getElementById('lista-roles');
-                data.roles.forEach(r => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `${r.position}: <b>${r.win_rate}%</b>`;
-                    listaRoles.appendChild(li);
-                });
-            })
-            .catch(err => console.error("Error cargando datos:", err));
-    </script>
+            const listaChamps = document.getElementById('lista-campeones');
+            data.top_champions.forEach(c => {
+                const div = document.createElement('div');
+                div.className = "list-item";
+                
+                // Mapeo especial para Mel con tu enlace y fallback para los demás
+                const iconUrl = (c.champion_name === "Mel") 
+                    ? "https://wiki.leagueoflegends.com/en-us/images/thumb/Mel_OriginalCentered.jpg/1000px-Mel_OriginalCentered.jpg?1ac03" 
+                    : `https://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/${c.champion_name}.png`;
+
+                div.innerHTML = `<img src="${iconUrl}" class="champ-icon" onerror="this.src='https://cdn-icons-png.flaticon.com/512/33/33736.png'">
+                                 <span>${c.champion_name}: <b>${c.games_played}</b></span>`;
+                listaChamps.appendChild(div);
+            });
+
+            const listaRoles = document.getElementById('lista-roles');
+            data.roles.forEach(r => {
+                const div = document.createElement('div');
+                div.className = "list-item";
+                div.innerHTML = `<span>${r.position}: <b>${r.win_rate}%</b></span>`;
+                listaRoles.appendChild(div);
+            });
+        });
+</script>
 </body>
 </html>
