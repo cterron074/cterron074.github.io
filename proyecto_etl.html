@@ -92,4 +92,92 @@
         .tech-tag {
             background: transparent;
             border: 1px solid var(--gold);
-            color
+            color: var(--gold);
+            padding: 5px 15px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-right: 10px;
+            display: inline-block;
+        }
+
+        .header-banner h1 {
+            font-size: 3rem;
+            text-shadow: 4px 4px 0px var(--accent-pink), -2px -2px 0px var(--accent-blue);
+            color: white;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-banner">
+            <h1>PIPELINE ETL: T15</h1>
+            <p>Infraestructura de datos de alto rendimiento</p>
+        </div>
+
+        <div class="card">
+            <h2>Resultados de Análisis</h2>
+            <div class="stats-grid">
+                <div class="stat-box"><span class="stat-title">Partidas</span><span class="stat-value" id="total-partidas">--</span></div>
+                <div class="stat-box"><span class="stat-title">Campeones</span><span class="stat-value" id="total-campeones">--</span></div>
+                <div class="stat-box"><span class="stat-title">Duración Avg</span><span class="stat-value" id="duracion-media">--</span></div>
+                <div class="stat-box"><span class="stat-title">Victorias</span><span class="stat-value" id="victorias-totales">--</span></div>
+                <div class="stat-box">
+                    <span class="stat-title">Top Campeón</span>
+                    <span class="stat-value" id="top-champ">--</span>
+                    <span class="stat-sub" id="top-champ-rate">--</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-title">Top Campeones</span>
+                    <ul id="lista-campeones"></ul>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-title">Win Rate por Rol</span>
+                    <ul id="lista-roles"></ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Tecnologías</h2>
+            <span class="tech-tag">Python</span>
+            <span class="tech-tag">Pandas</span>
+            <span class="tech-tag">Flask</span>
+            <span class="tech-tag">MySQL</span>
+        </div>
+    </div>
+
+    <script>
+        fetch('https://cterron074-github-io.onrender.com/api/stats')
+            .then(res => res.json())
+            .then(data => {
+                // 1. Indicadores simples
+                document.getElementById('total-partidas').innerText = data.general.total_games.toLocaleString();
+                document.getElementById('total-campeones').innerText = data.general.total_champions;
+                document.getElementById('duracion-media').innerText = data.general.avg_duration + " min";
+                document.getElementById('victorias-totales').innerText = data.wins.total_wins.toLocaleString();
+                document.getElementById('top-champ').innerText = data.best_champ.champion_name;
+                document.getElementById('top-champ-rate').innerText = data.best_champ.win_rate + "% WR";
+
+                // 2. Poblar Array Campeones
+                const listaChamps = document.getElementById('lista-campeones');
+                data.top_champions.forEach(c => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `${c.champion_name}: <b>${c.games_played}</b>`;
+                    listaChamps.appendChild(li);
+                });
+
+                // 3. Poblar Array Roles
+                const listaRoles = document.getElementById('lista-roles');
+                data.roles.forEach(r => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `${r.position}: <b>${r.win_rate}%</b>`;
+                    listaRoles.appendChild(li);
+                });
+            })
+            .catch(err => console.error("Error cargando datos:", err));
+    </script>
+</body>
+</html>
