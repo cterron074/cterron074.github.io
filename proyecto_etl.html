@@ -99,20 +99,21 @@
         </div>
 
         <div class="card">
-            <h2>Resultados de Análisis</h2>
+           
+        <h2>Resultados de Análisis</h2>
             <div class="stats-grid">
                 <div class="stat-box"><span class="stat-title">Partidas</span><span class="stat-value" id="total-partidas">--</span></div>
                 <div class="stat-box"><span class="stat-title">Campeones</span><span class="stat-value" id="total-campeones">--</span></div>
-                <div class="stat-box"><span class="stat-title">Minutos (Avg)</span><span class="stat-value" id="duracion-media">--</span></div>
+                <div class="stat-box"><span class="stat-title">Duración Avg</span><span class="stat-value" id="duracion-media">--</span></div>
                 <div class="stat-box"><span class="stat-title">Victorias</span><span class="stat-value" id="victorias-totales">--</span></div>
                 <div class="stat-box">
-                    <span class="stat-title">Top WinRate</span>
+                    <span class="stat-title">Top Campeón</span>
                     <span class="stat-value" id="top-champ">--</span>
                     <span class="stat-sub" id="top-champ-rate">--</span>
                 </div>
             </div>
         </div>
-
+    
         <div class="card">
             <h2>Tecnologías</h2>
             <span class="tech-tag">Python</span>
@@ -121,21 +122,31 @@
             <span class="tech-tag">MySQL</span>
         </div>
     </div>
-  <script>
+ <script>
     const API_URL = 'https://cterron074-github-io.onrender.com/api/stats';
-
     fetch(API_URL)
         .then(res => res.json())
         .then(data => {
-            // Mapeo de datos recibidos al HTML
+            // Mapeo directo al HTML
             document.getElementById('total-partidas').innerText = data.general.total_games.toLocaleString();
             document.getElementById('total-campeones').innerText = data.general.total_champions;
             document.getElementById('duracion-media').innerText = data.general.avg_duration + " min";
+            
+            // Victorias totales
             document.getElementById('victorias-totales').innerText = data.wins.total_wins.toLocaleString();
-            document.getElementById('top-champ').innerText = data.best_champ.champion_name;
-            document.getElementById('top-champ-rate').innerText = data.best_champ.win_rate + "% WR";
+            
+            // Mejor campeón (usando validación por si llega vacío)
+            if (data.best_champ && data.best_champ.champion_name) {
+                document.getElementById('top-champ').innerText = data.best_champ.champion_name;
+                document.getElementById('top-champ-rate').innerText = data.best_champ.win_rate + "% WR";
+            }
+
+            console.log("Datos cargados correctamente:", data);
         })
-        .catch(err => console.error("Error crítico de carga:", err));
+        .catch(err => {
+            console.error("Error al procesar JSON:", err);
+            document.querySelector('.stats-grid').innerHTML = "<p>Error al conectar con la base de datos.</p>";
+        });
 </script>
     
 </body>
