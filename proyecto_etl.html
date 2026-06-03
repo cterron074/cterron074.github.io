@@ -6,12 +6,19 @@
     <title>Dashboard Estadísticas T15 - Proyecto ETL</title>
    <style>
         :root {
-            --card-bg: rgba(10, 14, 19, 0.75);
-            --accent-blue: #00e1ff;
-            --accent-pink: #ff007f;
-            --gold: #f7d85c;
-            --text-main: #f7d85c;
-        }
+    /* Paleta ajustada para máximo contraste */
+    --card-bg: rgba(10, 14, 19, 0.85);
+    --accent-blue: #00e1ff;
+    --accent-pink: #ff007f;
+    
+    /* Dorado eléctrico (más saturado para contrastar con azul) */
+    --gold: #ffcc00; 
+    --gold-glow: #ff9900;
+    --text-main: #ffffff; /* Blanco para texto general para mejor lectura */
+}
+
+
+
 
         body {
             font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -61,18 +68,33 @@
             text-align: center;
         }
 
-        .stat-title { display: block; font-size: 0.7rem; color: #a1b0be; text-transform: uppercase; }
+        /* Los títulos de las listas también en dorado para coherencia */
+        .stat-title { 
+            display: block; 
+            font-size: 0.75rem; 
+            color: var(--gold); /* Títulos en dorado para destacar */
+            text-transform: uppercase; 
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
         .stat-value { font-size: 1.6rem; color: white; text-shadow: 0 0 10px var(--accent-blue); }
 
         ul { list-style: none; padding: 0; text-align: left; display: inline-block; }
         li { color: white; font-size: 0.8rem; margin: 3px 0; }
         li b { color: var(--accent-blue); }
 
+        /* Aplicación del contraste en los elementos */
         .tech-tag {
+            background: rgba(255, 204, 0, 0.1); /* Fondo muy sutil para resaltar el borde */
             border: 1px solid var(--gold);
             color: var(--gold);
             padding: 5px 15px;
-            margin-right: 10px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            /* Resplandor suave para que resalte sobre el fondo oscuro/azul */
+            text-shadow: 0 0 5px var(--gold-glow);
+            box-shadow: 0 0 10px rgba(255, 204, 0, 0.2);
             display: inline-block;
         }
     </style>
