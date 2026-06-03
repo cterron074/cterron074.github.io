@@ -42,7 +42,7 @@ def get_all_stats():
             res4 = conn.execute(text("SELECT c.champion_name, ROUND(SUM(p.win)*100.0/COUNT(p.game_id), 1) as win_rate FROM Participants p JOIN Champions c ON p.champion_id = c.champion_id GROUP BY c.champion_name HAVING COUNT(p.game_id) >= 10 ORDER BY win_rate DESC LIMIT 1")).mappings().first()
             
             # 5. Victorias Totales
-            res5 = conn.execute(text("SELECT COUNT(*) as total_wins FROM Games WHERE win = 1")).mappings().first()
+            res5 = conn.execute(text("SELECT COUNT(*) as total_wins FROM Participants WHERE win = 1")).mappings().first()
 
             return jsonify({
                 "general": dict(res1),
