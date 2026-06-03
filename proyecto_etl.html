@@ -27,14 +27,21 @@
         }
 
         /* --- EFECTO HOVER Y BRILLO --- */
-        .glow-hover {
-            transition: all 0.3s ease;
-        }
+        .glow-hover { transition: all 0.3s ease; }
         .glow-hover:hover {
             text-shadow: 0 0 8px #ffffff, 0 0 15px var(--blue-runic);
             cursor: pointer;
         }
 
+        .list-item { 
+            display: flex; align-items: center; padding: 8px 10px; border-bottom: 1px solid #222;
+            transition: all 0.3s ease;
+        }
+        .list-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 0 10px rgba(0, 225, 255, 0.2);
+            border-left: 2px solid var(--blue-runic);
+        }
         /* Estilo para las líneas de lista con resaltado al pasar el ratón */
         .list-item { 
             display: flex; align-items: center; padding: 8px 10px; border-bottom: 1px solid #222;
