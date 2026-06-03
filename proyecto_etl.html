@@ -26,15 +26,33 @@
             box-shadow: 0 0 50px rgba(0,0,0,0.9);
         }
 
+        /* --- EFECTO HOVER Y BRILLO --- */
+        .glow-hover {
+            transition: all 0.3s ease;
+        }
+        .glow-hover:hover {
+            text-shadow: 0 0 8px #ffffff, 0 0 15px var(--blue-runic);
+            cursor: pointer;
+        }
+
+        /* Estilo para las líneas de lista con resaltado al pasar el ratón */
+        .list-item { 
+            display: flex; align-items: center; padding: 8px 10px; border-bottom: 1px solid #222;
+            transition: all 0.3s ease;
+        }
+        .list-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 0 10px rgba(0, 225, 255, 0.2);
+            border-left: 2px solid var(--blue-runic);
+        }
+
         /* Cabecera Intro */
         .intro-section { border-bottom: 2px solid var(--gold); padding-bottom: 20px; margin-bottom: 30px; }
         h1 { color: var(--gold); text-transform: uppercase; margin: 0; font-size: 3rem; text-shadow: 2px 2px 5px black; }
-        .intro-text { color: var(--gold); font-style: italic; }
-
+        
         /* Grid de métricas */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .stat-box { background: rgba(0,0,0,0.4); border: 1px solid #2e1d1d; padding: 15px; text-align: center; }
-        .stat-title { display: block; color: var(--gold); font-size: 0.7rem; text-transform: uppercase; }
         .stat-value { font-size: 1.5rem; color: white; text-shadow: 0 0 8px var(--blue-runic); }
 
         /* Layout central */
@@ -42,52 +60,7 @@
         .left-side { flex: 1; }
         .ivern-container { width: 350px; border: 2px solid #5d4037; padding: 10px; background: #000; text-align: center; }
         .ivern-img { width: 100%; border: 1px solid var(--gold); }
-
-        /* Listas */
-        .list-box { margin-bottom: 20px; }
-        .list-item { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #222; }
-        .champ-icon { 
-            width: 30px; height: 30px; border-radius: 50%; margin-right: 15px; 
-            border: 1px solid var(--gold); object-fit: cover; background-color: #000;
-        }
-
-        .tech-tag { border: 1px solid var(--gold); color: var(--gold); padding: 5px 15px; margin-right: 10px; font-weight: bold; }
-
-        /* ESTILO FOOTER RÚNICO */
-        .footer-runic {
-            margin-top: 40px;
-            padding: 30px;
-            border-top: 2px solid #3e2723;
-            background: rgba(5, 7, 10, 0.95);
-            text-align: center;
-            color: var(--gold);
-            font-size: 0.85rem;
-            border-bottom: 2px solid #3e2723;
-        }
-        
-        .footer-content p { margin: 5px 0; }
-        
-        .footer-links { margin: 10px 0; }
-        
-        .footer-links a {
-            color: var(--blue-runic);
-            text-decoration: none;
-            margin: 0 10px;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-        
-        .footer-links a:hover {
-            color: white;
-            text-shadow: 0 0 5px var(--blue-runic);
-        }
-        
-        .footer-credit {
-            font-size: 0.75rem;
-            opacity: 0.6;
-            margin-top: 15px;
-        }
-                        
+        .champ-icon { width: 30px; height: 30px; border-radius: 50%; margin-right: 15px; border: 1px solid var(--gold); object-fit: cover; }
     </style>
 </head>
 <body>
@@ -95,84 +68,65 @@
 <div class="dashboard-container">
     <header class="intro-section">
         <h1>PIPELINE ETL: T15</h1>
-        <p class="intro-text">Este proyecto implementa una infraestructura completa de datos diseñada para capturar, procesar y consolidar las estadísticas complejas de la 
-        <strong>Temporada 15</strong>. El objetivo principal es transformar datos brutos provenientes de múltiples fuentes en un repositorio estructurado óptimo para el análisis analítico y de rendimiento.</p></p>
     </header>
 
     <div class="stats-grid">
-        <div class="stat-box"><span class="stat-title">Partidas</span><span class="stat-value" id="total-partidas">--</span></div>
-        <div class="stat-box"><span class="stat-title">Campeones</span><span class="stat-value" id="total-campeones">--</span></div>
-        <div class="stat-box"><span class="stat-title">Duración Avg</span><span class="stat-value" id="duracion-media">--</span></div>
-        <div class="stat-box"><span class="stat-title">Victorias</span><span class="stat-value" id="victorias-totales">--</span></div>
+        <div class="stat-box"><span class="stat-value" id="total-partidas">--</span></div>
+        <div class="stat-box"><span class="stat-value" id="total-campeones">--</span></div>
+        <div class="stat-box"><span class="stat-value" id="duracion-media">--</span></div>
+        <div class="stat-box"><span class="stat-value" id="victorias-totales">--</span></div>
     </div>
 
     <div class="content-layout">
         <div class="left-side">
-            <div class="list-box">
-                <h2 style="font-size:1.2rem; color:var(--gold);">Top Campeones</h2>
-                <div id="lista-campeones"></div>
-            </div>
-            <div class="list-box">
-                <h2 style="font-size:1.2rem; color:var(--gold);">Win Rate por Rol</h2>
-                <div id="lista-roles"></div>
-            </div>
+            <h2 style="color:var(--gold);">Top Campeones</h2>
+            <div id="lista-campeones"></div>
+            
+            <h2 style="color:var(--gold);">Win Rate por Rol</h2>
+            <div id="lista-roles"></div>
         </div>
 
         <div class="ivern-container">
             <img src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ivern_0.jpg" alt="Ivern" class="ivern-img">
-            
-            <h3 style="color:var(--gold); font-size:0.9rem; margin:10px 0 0 0; text-transform:uppercase; letter-spacing:1px;">
-                Campeón clasificado como el más efectivo
-            </h3>
-            <h2 style="font-size:1.4rem; margin:5px 0; color:white;">Ivern</h2>
-            <p id="top-champ-rate" style="color:var(--blue-runic); font-weight:bold; font-size:1.1rem;">-- WR</p>
+            <h2 style="color:white; margin:10px 0;">Ivern</h2>
+            <p id="top-champ-rate" class="glow-hover" style="color:white; font-weight:bold; font-size:1.2rem;"></p>
         </div>
-    </div>
-
-    <div style="margin-top:30px;">
-        <span class="tech-tag">Python</span><span class="tech-tag">Pandas</span><span class="tech-tag">Flask</span><span class="tech-tag">MySQL</span>
     </div>
 </div>
 
 <script>
-    fetch('https://cterron074-github-io.onrender.com/api/stats')
+fetch('https://cterron074-github-io.onrender.com/api/stats')
         .then(res => res.json())
         .then(data => {
-            document.getElementById('total-partidas').innerText = data.general.total_games.toLocaleString();
-            document.getElementById('total-campeones').innerText = data.general.total_champions;
-            document.getElementById('duracion-media').innerText = data.general.avg_duration + " min";
-            document.getElementById('victorias-totales').innerText = data.wins.total_wins.toLocaleString();
+            // Asignación de todos los datos generales
+            document.getElementById('val-partidas').innerText = data.general.total_games.toLocaleString();
+            document.getElementById('val-campeones').innerText = data.general.total_champions;
+            document.getElementById('val-duracion').innerText = data.general.avg_duration + " min";
+            document.getElementById('val-victorias').innerText = data.wins.total_wins.toLocaleString();
+            
+            // Datos de Ivern / Mejor Campeón
+            document.getElementById('top-champ-name').innerText = data.best_champ.champion_name;
             document.getElementById('top-champ-rate').innerText = data.best_champ.win_rate + "% WR";
 
+            // Listas dinámicas
             const listaChamps = document.getElementById('lista-campeones');
             data.top_champions.forEach(c => {
                 const div = document.createElement('div');
-                div.className = "list-item";
-                
-                // Mapeo especial para Mel con tu enlace y fallback para los demás
-                const iconUrl = (c.champion_name === "Mel") 
-                    ? "https://wiki.leagueoflegends.com/en-us/images/thumb/Mel_OriginalCentered.jpg/1000px-Mel_OriginalCentered.jpg?1ac03" 
-                    : `https://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/${c.champion_name}.png`;
-
-                div.innerHTML = `<img src="${iconUrl}" class="champ-icon" onerror="this.src='https://cdn-icons-png.flaticon.com/512/33/33736.png'">
-                                 <span>${c.champion_name}: <b>${c.games_played}</b></span>`;
+                div.className = "list-item glow-hover";
+                const iconUrl = (c.champion_name === "Mel") ? "https://wiki.leagueoflegends.com/en-us/images/thumb/Mel_OriginalCentered.jpg/1000px-Mel_OriginalCentered.jpg?1ac03" : `https://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/${c.champion_name}.png`;
+                div.innerHTML = `<img src="${iconUrl}" class="champ-icon"><span>${c.champion_name}: <b>${c.games_played}</b></span>`;
                 listaChamps.appendChild(div);
             });
 
             const listaRoles = document.getElementById('lista-roles');
             data.roles.forEach(r => {
                 const div = document.createElement('div');
-                div.className = "list-item";
+                div.className = "list-item glow-hover";
                 div.innerHTML = `<span>${r.position}: <b>${r.win_rate}%</b></span>`;
                 listaRoles.appendChild(div);
             });
-        });
+        })
+        .catch(err => console.error("Error al obtener los datos:", err));
 </script>
-    <footer class="footer-runic">
-    <div class="footer-content">
-        <p>2025 Pipeline ETL: T15. Sistema de Análisis Arcano-Tecnológico.</p>
-        <p class="footer-credit">Desarrollado con datos de Riot Games | No afiliado a Riot Games | Estilo imitado. </p>
-    </div>
-</footer>
 </body>
 </html>
