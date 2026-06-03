@@ -121,32 +121,22 @@
             <span class="tech-tag">MySQL</span>
         </div>
     </div>
+  <script>
+    const API_URL = 'https://cterron074-github-io.onrender.com/api/stats';
 
-    <script>
-        const API_BASE_URL = 'https://cterron074-github-io.onrender.com';
-
-        // Helper para llamadas fetch
-        const fetchData = (endpoint, callback) => {
-            fetch(`${API_BASE_URL}${endpoint}`)
-                .then(res => res.json())
-                .then(data => callback(data))
-                .catch(err => console.error(`Error en ${endpoint}:`, err));
-        };
-
-        fetchData('/api/general-stats', data => {
-            document.getElementById('total-partidas').innerText = data.total_games.toLocaleString();
-            document.getElementById('total-campeones').innerText = data.total_champions;
-            document.getElementById('duracion-media').innerText = data.avg_duration_minutes;
-        });
-
-        fetchData('/api/win-summary', data => {
-            document.getElementById('victorias-totales').innerText = data.total_wins.toLocaleString();
-        });
-
-        fetchData('/api/best-champion', data => {
-            document.getElementById('top-champ').innerText = data.champion_name;
-            document.getElementById('top-champ-rate').innerText = data.win_rate + "% Win Rate";
-        });
-    </script>
+    fetch(API_URL)
+        .then(res => res.json())
+        .then(data => {
+            // Mapeo de datos recibidos al HTML
+            document.getElementById('total-partidas').innerText = data.general.total_games.toLocaleString();
+            document.getElementById('total-campeones').innerText = data.general.total_champions;
+            document.getElementById('duracion-media').innerText = data.general.avg_duration + " min";
+            document.getElementById('victorias-totales').innerText = data.wins.total_wins.toLocaleString();
+            document.getElementById('top-champ').innerText = data.best_champ.champion_name;
+            document.getElementById('top-champ-rate').innerText = data.best_champ.win_rate + "% WR";
+        })
+        .catch(err => console.error("Error crítico de carga:", err));
+</script>
+    
 </body>
 </html>
