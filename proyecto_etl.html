@@ -71,9 +71,13 @@
             text-align: center;
         }
 
-        .stat-title { display: block; font-size: 0.8rem; color: #8899aa; text-transform: uppercase; margin-bottom: 5px; }
-        .stat-value { font-size: 1.8rem; display: block; color: white; text-shadow: 0 0 10px var(--accent-blue); }
-        .stat-sub { font-size: 0.8rem; color: var(--gold); }
+        .stat-title { 
+                    display: block; font-size: 0.8rem; color: #8899aa; 
+                     text-transform: uppercase; margin-bottom: 5px; 
+                    }
+        .stat-value { font-size: 1.8rem; display: block; color: white; text-shadow: 0 0 10px var(--accent-blue);
+                    }
+        .stat-sub { font-size: 0.8rem; }
 
         .tech-tag {
             background: transparent;
@@ -86,8 +90,25 @@
             margin-right: 10px;
             display: inline-block;
         }
-
-        .header-banner h1 { font-size: 3rem; text-shadow: 4px 4px 0px var(--accent-pink), -2px -2px 0px var(--accent-blue); }
+            ul.lista-campeones{
+                list-style-type: none; 
+                padding: 0; 
+                font-size: 0.8rem; 
+                text-align: center; 
+                color: #0a9ff0;
+                          }
+            ul.lista-roles{
+                list-style-type: none; 
+                padding: 0; 
+                font-size: 0.8rem; 
+                text-align: center; 
+                color: #0a9ff0;
+                          }
+        .header-banner h1 {
+                            font-size: 3rem;
+                           text-shadow: 4px 4px 0px var(--accent-pink), -2px -2px 0px var(--accent-blue);
+                           color:white;
+        }
     </style>
 </head>
 <body>
@@ -114,11 +135,11 @@
         
                 <div class="stat-box">
                     <span class="stat-title">Top Campeones</span>
-                    <ul id="lista-campeones" style="list-style-type: none; padding: 0; font-size: 0.8rem; text-align: center;"></ul>
+                    <ul id="lista-campeones"></ul>
                 </div>
                 <div class="stat-box">
                     <span class="stat-title">Win Rate por Rol</span>
-                    <ul id="lista-roles" style="list-style-type: none; padding: 0; font-size: 0.8rem; text-align: center; color: #0a9ff0;"></ul>
+                    <ul id="lista-roles"></ul>
                 </div>
             </div>
 
