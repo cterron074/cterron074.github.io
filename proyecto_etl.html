@@ -52,6 +52,42 @@
         }
 
         .tech-tag { border: 1px solid var(--gold); color: var(--gold); padding: 5px 15px; margin-right: 10px; font-weight: bold; }
+
+        /* ESTILO FOOTER RÚNICO */
+        .footer-runic {
+            margin-top: 40px;
+            padding: 30px;
+            border-top: 2px solid #3e2723;
+            background: rgba(5, 7, 10, 0.95);
+            text-align: center;
+            color: var(--gold);
+            font-size: 0.85rem;
+            border-bottom: 2px solid #3e2723;
+        }
+        
+        .footer-content p { margin: 5px 0; }
+        
+        .footer-links { margin: 10px 0; }
+        
+        .footer-links a {
+            color: var(--blue-runic);
+            text-decoration: none;
+            margin: 0 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            text-shadow: 0 0 5px var(--blue-runic);
+        }
+        
+        .footer-credit {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            margin-top: 15px;
+        }
+                        
     </style>
 </head>
 <body>
@@ -132,5 +168,11 @@
             });
         });
 </script>
+    <footer class="footer-runic">
+    <div class="footer-content">
+        <p>2025 Pipeline ETL: T15. Sistema de Análisis Arcano-Tecnológico.</p>
+        <p class="footer-credit">Desarrollado con datos de Riot Games | No afiliado a Riot Games | Estilo imitado. </p>
+    </div>
+</footer>
 </body>
 </html>
