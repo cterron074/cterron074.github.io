@@ -25,14 +25,38 @@ engine = create_engine(CONNECTION_STRING)
 # ----------------------------------------------------
 # ENDPOINTS
 # ----------------------------------------------------
+# ----------------------------------------------------
+# NUEVOS ENDPOINTS PARA MÉTRICAS ADICIONALES
+# ----------------------------------------------------
 
-@app.route('/api/general-stats', methods=['GET'])
-def get_general_stats():
+@app.route('/api/best-champion', methods=['GET'])
+def get_best_champion():
+    # Campeón con mejor win_rate y al menos 10 partidas jugadas
     query = text("""
         SELECT 
-            (SELECT COUNT(*) FROM Games) as total_games,
-            (SELECT COUNT(*) FROM Champions) as total_champions,
-            (SELECT ROUND(AVG(duration) / 60, 1) FROM Games) as avg_duration_minutes
+            c.champion_name,
+            ROUND(SUM(p.win) * 100.0 / COUNT(p.game_id), 1) as win_rate
+        FROM Participants p
+        JOIN Champions c ON p.champion_id = c.champion_id
+        GROUP BY c.champion_name
+        HAVING COUNT(p.game_id) >= 10
+        ORDER BY win_rate DESC
+        LIMIT 1
+    """)
+    try:
+        with engine.connect() as conn:
+            result = conn.execute(query).mappings().first()
+            return jsonify(dict(result) if result else {"champion_name": "N/A", "win_rate": 0}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/win-summary', methods=['GET'])
+def get_win_summary():
+    # Total de victorias globales
+    query = text("""
+        SELECT COUNT(*) as total_wins 
+        FROM Games 
+        WHERE win = 1
     """)
     try:
         with engine.connect() as conn:
@@ -40,79 +64,6 @@ def get_general_stats():
             return jsonify(dict(result)), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-@app.route('/api/top-champions', methods=['GET'])
-def get_top_champions():
-    query = text("""
-        SELECT 
-            c.champion_name,
-            COUNT(p.game_id) as games_played,
-            ROUND(AVG(p.kills), 1) as avg_kills,
-            ROUND(AVG(p.deaths), 1) as avg_deaths,
-            ROUND(AVG(p.assists), 1) as avg_assists,
-            ROUND(SUM(CASE WHEN p.win = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(p.game_id), 1) as win_rate
-        FROM Participants p
-        JOIN Champions c ON p.champion_id = c.champion_id
-        GROUP BY c.champion_id, c.champion_name
-        ORDER BY games_played DESC
-        LIMIT 6
-    """)
-    try:
-        with engine.connect() as conn:
-            result = conn.execute(query).mappings().all()
-            return jsonify([dict(row) for row in result]), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/stats-by-role', methods=['GET'])
-def get_stats_by_role():
-    query = text("""
-        SELECT 
-            position,
-            COUNT(game_id) as games_played,
-            ROUND(SUM(CASE WHEN win = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(game_id), 1) as win_rate,
-            ROUND(AVG(kills), 1) as avg_kills,
-            ROUND(AVG(deaths), 1) as avg_deaths,
-            ROUND(AVG(assists), 1) as avg_assists
-        FROM Participants
-        WHERE position IN ('TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'SUPPORT')
-        GROUP BY position
-        ORDER BY games_played DESC
-    """)
-    try:
-        with engine.connect() as conn:
-            result = conn.execute(query).mappings().all()
-            return jsonify([dict(row) for row in result]), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/recent-matches', methods=['GET'])
-def get_recent_matches():
-    query = text("""
-        SELECT 
-            g.game_id,
-            g.start_utc,
-            ROUND(g.duration / 60, 0) as duration_minutes,
-            g.game_mode,
-            c.champion_name,
-            p.position,
-            p.kills,
-            p.deaths,
-            p.assists,
-            p.win
-        FROM Games g
-        JOIN Participants p ON g.game_id = p.game_id
-        JOIN Champions c ON p.champion_id = c.champion_id
-        ORDER BY g.start_utc DESC
-        LIMIT 10
-    """)
-    try:
-        with engine.connect() as conn:
-            result = conn.execute(query).mappings().all()
-            return jsonify([dict(row) for row in result]), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
 if __name__ == '__main__':
     # Puerto dinámico para Render
     port = int(os.environ.get("PORT", 8085))
