@@ -7,28 +7,43 @@
     <title>Dashboard T15 - Runic Analytics</title>
     <style>
        /* --- RESPONSIVE DESIGN --- */
-        @media only screen and (max-width: 600px) {
+       @media only screen and (max-width: 768px) {
+            /* Restaurar contenedor principal */
             .dashboard-container {
-                width: 100% !important;
-                padding: 10px !important;
-                margin: 0 !important;
+                width: 90% !important; /* Un poco menos del 100% para que el borde se vea */
+                margin: 10px auto !important;
+                padding: 15px !important;
+                border: 2px solid #3e2723 !important; /* Restauramos el borde */
                 box-sizing: border-box !important;
-                border: none !important; /* Quitamos bordes para ahorrar espacio */
             }
         
+            /* Forzar rejilla 2x2 */
             .stats-grid {
                 display: grid !important;
-                grid-template-columns: 1fr 1fr !important; /* 2x2 obligatorio */
-                gap: 5px !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 10px !important;
             }
         
+            /* Apilar contenido */
             .content-layout {
                 display: flex !important;
                 flex-direction: column !important;
             }
         
-            .left-side { order: 1 !important; width: 100% !important; }
-            .ivern-container { order: 2 !important; width: 100% !important; margin-top: 20px !important; }
+            /* Ajustar imagen de Ivern para que no desborde */
+            .ivern-container {
+                order: 2 !important;
+                width: 100% !important;
+                margin-top: 20px !important;
+                box-sizing: border-box !important;
+            }
+        
+            .ivern-img {
+                width: 100% !important; /* La imagen se ajustará al ancho de la caja */
+                height: auto !important; /* Mantiene la proporción sin estirarse */
+                max-height: 250px;
+                object-fit: cover;
+            }
         }
         :root {
             --gold: #c5a059;
