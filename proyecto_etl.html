@@ -6,6 +6,32 @@
     <meta name="author" content="Carmen Terrón"/>
     <title>Dashboard T15 - Runic Analytics</title>
     <style>
+        /* --- RESPONSIVE DESIGN --- */
+         @media (max-width: 768px) {
+                body { padding: 10px; }
+                
+                .dashboard-container { padding: 15px; }
+            
+                .stats-grid { 
+                    grid-template-columns: repeat(2, 1fr); /* Pasa a 2 columnas en tablets/móviles */
+                }
+            
+                .content-layout { 
+                    flex-direction: column; /* Apila los elementos verticalmente */
+                }
+            
+                .ivern-container { 
+                    width: 100%; /* Ocupa todo el ancho disponible */
+                    min-width: auto;
+                    margin-top: 20px;
+                }
+            
+                .ivern-img { 
+                    height: 200px; /* Reduce un poco la altura para que no ocupe tanto espacio */
+                }
+            
+                h1 { font-size: 2rem; }
+            }
         :root {
             --gold: #c5a059;
             --blue-runic: #00e1ff;
