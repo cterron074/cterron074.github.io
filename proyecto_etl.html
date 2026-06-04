@@ -63,18 +63,15 @@
         }
 
        body {
-            margin: 0; 
-            padding: 40px;
-            /* Fondo actualizado */
-            background: linear-gradient(rgba(5, 7, 10, 0.85), rgba(5, 7, 10, 0.85)), 
-                        url('https://i.pinimg.com/736x/f6/b3/f5/f6b3f5451e06e30a597a7a505b058a5c.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
+
+            margin: 0; padding: 40px;
+            background: var(--bg-dark);
+            background-image: radial-gradient(circle at center, #1b263b 0%, #05070a 80%);
             color: #d1d1d1;
             font-family: 'Segoe UI', sans-serif;
         }
+
+
         .dashboard-container {
             max-width: 1000px; margin: auto;
             border: 2px solid #3e2723;
