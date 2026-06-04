@@ -2,36 +2,46 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta name="author" content="Carmen Terrón"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Carmen Terron">
     <title>Dashboard T15 - Runic Analytics</title>
     <style>
-        /* --- RESPONSIVE DESIGN --- */
-         @media (max-width: 768px) {
-                body { padding: 10px; }
-                
-                .dashboard-container { padding: 15px; }
+       /* --- RESPONSIVE DESIGN --- */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
             
-                .stats-grid { 
-                    grid-template-columns: repeat(2, 1fr); /* Pasa a 2 columnas en tablets/móviles */
-                }
-            
-                .content-layout { 
-                    flex-direction: column; /* Apila los elementos verticalmente */
-                }
-            
-                .ivern-container { 
-                    width: 100%; /* Ocupa todo el ancho disponible */
-                    min-width: auto;
-                    margin-top: 20px;
-                }
-            
-                .ivern-img { 
-                    height: 200px; /* Reduce un poco la altura para que no ocupe tanto espacio */
-                }
-            
-                h1 { font-size: 2rem; }
+            /* El dashboard ocupa todo el ancho */
+            .dashboard-container { padding: 15px; }
+        
+            /* Los 4 recuadros en formato 2x2 */
+            .stats-grid { 
+                grid-template-columns: repeat(2, 1fr); 
+                gap: 10px;
             }
+        
+            /* Convertimos el layout principal en columna */
+            .content-layout { 
+                flex-direction: column; 
+            }
+        
+            /* Forzamos que la lista de la izquierda esté arriba (orden 1) */
+            .left-side { 
+                order: 1; 
+                width: 100%; 
+            }
+        
+            /* Forzamos que la caja de Ivern esté debajo (orden 2) */
+            .ivern-container { 
+                order: 2; 
+                width: 100%; 
+                min-width: auto;
+                margin-top: 20px;
+                box-sizing: border-box; /* Asegura que el padding no desborde */
+            }
+        
+            .ivern-img { height: 200px; }
+            h1 { font-size: 1.8rem; }
+        }
         :root {
             --gold: #c5a059;
             --blue-runic: #00e1ff;
