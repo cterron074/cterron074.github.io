@@ -7,40 +7,43 @@
     <title>Dashboard T15 - Runic Analytics</title>
     <style>
        /* --- RESPONSIVE DESIGN --- */
-        @media (max-width: 400px) {
-            body { padding: 10px; }
-            
-            /* El dashboard ocupa todo el ancho */
-            .dashboard-container { padding: 15px; }
+      @media (max-width: 600px) {
+            /* Hacemos que el contenedor principal no tenga anchos fijos molestos */
+            .dashboard-container {
+                padding: 15px;
+                width: 95%;
+                margin: 10px auto;
+                box-sizing: border-box;
+            }
         
-            /* Los 4 recuadros en formato 2x2 */
-            .stats-grid { 
-                grid-template-columns: repeat(2, 1fr); 
+            /* Convertimos las estadísticas en una rejilla de 2 columnas */
+            .stats-grid {
+                grid-template-columns: 1fr 1fr; /* Dos columnas iguales */
                 gap: 10px;
             }
         
-            /* Convertimos el layout principal en columna */
-            .content-layout { 
-                flex-direction: column; 
+            /* Ajuste de fuentes para que no se corten */
+            h1 { font-size: 2rem; }
+            .stat-title { font-size: 0.6rem; }
+            .stat-value { font-size: 1.1rem; }
+        
+            /* Forzamos el orden: primero los datos, al final Ivern */
+            .content-layout {
+                flex-direction: column;
             }
         
-            /* Forzamos que la lista de la izquierda esté arriba (orden 1) */
-            .left-side { 
-                order: 1; 
-                width: 100%; 
-            }
-        
-            /* Forzamos que la caja de Ivern esté debajo (orden 2) */
-            .ivern-container { 
-                order: 2; 
-                width: 100%; 
-                min-width: auto;
+            .ivern-container {
+                order: 2; /* Ivern se va abajo */
+                width: 100%;
+                min-width: unset;
                 margin-top: 20px;
-                box-sizing: border-box; /* Asegura que el padding no desborde */
+                box-sizing: border-box;
             }
         
-            .ivern-img { height: 200px; }
-            h1 { font-size: 1.8rem; }
+            .left-side {
+                order: 1; /* El texto se queda arriba */
+                width: 100%;
+            }
         }
         :root {
             --gold: #c5a059;
