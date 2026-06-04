@@ -7,43 +7,54 @@
     <title>Dashboard T15 - Runic Analytics</title>
     <style>
        /* --- RESPONSIVE DESIGN --- */
-       @media only screen and (max-width: 768px) {
-            /* Restaurar contenedor principal */
-            .dashboard-container {
-                width: 90% !important; /* Un poco menos del 100% para que el borde se vea */
-                margin: 10px auto !important;
-                padding: 15px !important;
-                border: 2px solid #3e2723 !important; /* Restauramos el borde */
-                box-sizing: border-box !important;
+     @media (max-width: 768px) {
+            /* 1. Reset para que nada se salga de la pantalla */
+            body {
+                padding: 10px !important;
+                overflow-x: hidden; 
             }
         
-            /* Forzar rejilla 2x2 */
+            .dashboard-container {
+                width: 100% !important;
+                padding: 15px !important;
+                margin: 0 !important;
+                box-sizing: border-box !important;
+                /* Asegura que el borde no rompa el diseño */
+                border: 2px solid #3e2723 !important; 
+            }
+        
+            /* 2. Grid de 2x2 para las stats */
             .stats-grid {
                 display: grid !important;
                 grid-template-columns: 1fr 1fr !important;
                 gap: 10px !important;
             }
         
-            /* Apilar contenido */
+            /* 3. El contenedor padre debe ser bloque para apilar */
             .content-layout {
                 display: flex !important;
                 flex-direction: column !important;
+                gap: 20px !important;
             }
         
-            /* Ajustar imagen de Ivern para que no desborde */
+            /* 4. Ivern: Ancho 100% y sin min-width que lo haga sobresalir */
             .ivern-container {
-                order: 2 !important;
                 width: 100% !important;
-                margin-top: 20px !important;
+                min-width: 0 !important;
+                margin: 0 !important;
+                padding: 10px !important;
                 box-sizing: border-box !important;
             }
         
             .ivern-img {
-                width: 100% !important; /* La imagen se ajustará al ancho de la caja */
-                height: auto !important; /* Mantiene la proporción sin estirarse */
-                max-height: 250px;
-                object-fit: cover;
+                width: 100% !important;
+                height: auto !important;
+                display: block !important;
             }
+        
+            /* 5. Ajuste de textos para que no se desborden */
+            h1 { font-size: 1.5rem !important; }
+            .stat-value { font-size: 1.1rem !important; }
         }
         :root {
             --gold: #c5a059;
