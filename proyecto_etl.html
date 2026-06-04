@@ -154,6 +154,21 @@
     opacity: 0.6;
     margin-top: 15px;
 }
+
+.project-description {
+            background: rgba(197, 160, 89, 0.05);
+            border: 1px solid var(--gold);
+            padding: 20px;
+            margin-bottom: 30px;
+            color: #d1d1d1;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            border-radius: 4px;
+        }
+
+
+
+        
     </style>
 </head>
 <body>
@@ -162,7 +177,11 @@
     <header class="intro-section">
         <h1>PIPELINE ETL: T15</h1>
     </header>
-
+    <div class="project-description">
+        <h3 style="color: var(--gold); margin-top: 0;">Sobre el Proyecto</h3>
+        <p>Este Dashboard forma parte del pipeline de extracción, transformación y carga (ETL) diseñado para el análisis estadístico de partidas. El sistema procesa grandes volúmenes de datos de la API de Riot Games para extraer insights clave sobre rendimiento de campeones, tasas de victoria por rol y tendencias de juego en tiempo real.</p>
+    </div>
+    
     <div class="stats-grid">
         <div class="stat-box"><span class="stat-title">Partidas</span><span class="stat-value" id="total-partidas">--</span></div>
         <div class="stat-box"><span class="stat-title">Campeones</span><span class="stat-value" id="total-campeones">--</span></div>
